@@ -53,7 +53,7 @@ operatorImg ={
     "gridlock": "https://marcopixel.eu/r6-operatoricons/assets/png/gridlock.png"
 }
 
-auth = r6.Auth("account", "password")
+auth = r6.Auth(os.getenv("R6-ACCOUNT",None), os.getenv("R6-PASSWORD",None))
 bot = commands.Bot(command_prefix='d.')
 bot.remove_command('help')
 
@@ -172,7 +172,7 @@ async def player(ctx,user):
         await ctx.send(embed=embed)
     except Exception as error:
         #await ctx.send("找不到用戶，請檢查用戶名是否正確")
-        await ctx.send(err)
+        await ctx.send(error)
         
 ##自定義說明
 @bot.command()
