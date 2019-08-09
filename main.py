@@ -1,6 +1,7 @@
 import datetime
 import discord
 import r6sapi as r6
+import os
 from discord.ext import commands
 
 operatorImg ={
@@ -186,4 +187,4 @@ async def help(ctx):
 def bold(text):
     return "**"+str(text)+"**"
     
-bot.run('token')
+bot.run(os.getenv("DISCORD-KEY",None))
