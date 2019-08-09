@@ -171,7 +171,8 @@ async def player(ctx,user):
         
         await ctx.send(embed=embed)
     except Exception as error:
-        await ctx.send("找不到用戶，請檢查用戶名是否正確")
+        #await ctx.send("找不到用戶，請檢查用戶名是否正確")
+        await ctx.send(err)
         
 ##自定義說明
 @bot.command()
