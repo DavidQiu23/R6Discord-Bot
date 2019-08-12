@@ -80,11 +80,12 @@ async def operator(ctx,user,operator):
         if(data.wins == 0 and data.losses == 0):
             win_ratio = 0+"%"
             kd = 0
+            time = str(datetime.timedelta(seconds=))
         else:
             win_ratio = str(round((data.wins/(data.wins+data.losses))*100,2))+"%"
             kd = str(round(data.kills/data.deaths,2))
-            
-        time = str(datetime.timedelta(seconds=data.time_played))
+            time = str(datetime.timedelta(seconds=data.time_played))
+        
         
         embed = discord.Embed(title=data.name.upper()+"資訊",colour=discord.Colour.teal())
         embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
