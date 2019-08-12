@@ -77,8 +77,13 @@ async def operator(ctx,user,operator):
         
         imgUrl = operatorImg[operator]
         
-        win_ratio = str(round((data.wins/(data.wins+data.losses))*100,2))+"%"
-        kd = str(round(data.kills/data.deaths,2))
+        if(data.wins == 0 && data.losses == 0):
+            win_ratio = 0+"%"
+            kd = 0
+        else
+            win_ratio = str(round((data.wins/(data.wins+data.losses))*100,2))+"%"
+            kd = str(round(data.kills/data.deaths,2))
+            
         time = str(datetime.timedelta(seconds=data.time_played))
         
         embed = discord.Embed(title=data.name.upper()+"資訊",colour=discord.Colour.teal())
