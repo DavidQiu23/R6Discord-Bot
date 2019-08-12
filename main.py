@@ -80,7 +80,7 @@ async def operator(ctx,user,operator):
         if(data.wins == 0 and data.losses == 0):
             win_ratio = 0+"%"
             kd = 0
-            time = str(datetime.timedelta(seconds=))
+            time = str(datetime.timedelta(seconds = 0))
         else:
             win_ratio = str(round((data.wins/(data.wins+data.losses))*100,2))+"%"
             kd = str(round(data.kills/data.deaths,2))
