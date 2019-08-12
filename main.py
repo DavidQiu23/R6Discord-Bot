@@ -133,6 +133,7 @@ async def vsoperator(ctx,user1,user2,operator):
         imgUrl = operatorImg[operator]    
         
         if(data1.wins == 0 and data1.losses == 0):
+            errorFlag = True
             await ctx.send("用戶1此角色無資料無法比較")
         else:
             win_ratio1 = str(round((data1.wins/(data1.wins+data1.losses))*100,2))+"%"
@@ -140,24 +141,26 @@ async def vsoperator(ctx,user1,user2,operator):
             time1 = str(datetime.timedelta(seconds=data1.time_played))
         
         if(data2.wins == 0 and data2.losses == 0):
+            errorFlag = True
             await ctx.send("用戶2此角色無資料無法比較")
         else:
             win_ratio2 = str(round((data2.wins/(data2.wins+data2.losses))*100,2))+"%"
             kd2 = str(round(data2.kills/data2.deaths,2))
             time2 = str(datetime.timedelta(seconds=data2.time_played))
         
-        embed = discord.Embed(title=player1.name+" vs "+player2.name,description=operator.upper()+"比較",colour=discord.Colour.green())
-        embed.set_thumbnail(url=imgUrl)
-        embed.add_field(name=bold("勝/敗"), value=bold(player1.name+": ")+str(data1.wins)+"/"+str(data1.losses)+"  |  "+win_ratio1+"\r\n"+bold(player2.name+": ")+str(data2.wins)+"/"+str(data2.losses)+"  |  "+win_ratio2)
-        embed.add_field(name=bold("殺/死"), value=bold(player1.name+": ")+str(data1.kills)+"/"+str(data1.deaths)+"  |  "+kd1+"\r\n"+bold(player2.name+": ")+str(data2.kills)+"/"+str(data2.deaths)+"  |  "+kd2, inline=True)
-        embed.add_field(name=bold("爆頭"), value=bold(player1.name+": ")+str(data1.headshots)+"\r\n"+bold(player2.name+": ")+str(data2.headshots))
-        embed.add_field(name=bold("近戰"), value=bold(player1.name+": ")+str(data1.melees)+"\r\n"+bold(player2.name+": ")+str(data2.melees), inline=True)
-        embed.add_field(name=bold("被拉起"), value=bold(player1.name+": ")+str(data1.dbnos)+"\r\n"+bold(player2.name+":")+str(data2.dbnos))
-        embed.add_field(name=bold(data1.statistic_name), value=bold(player1.name+": ")+str(data1.statistic)+"\r\n"+bold(player2.name+": ")+str(data2.statistic), inline=True)
-        embed.add_field(name=bold("經驗值"),value=bold(player1.name+": ")+str(data1.xp)+"\r\n"+bold(player2.name+": ")+str(data2.xp))
-        embed.add_field(name=bold("遊玩時間"),value=bold(player1.name+": ")+time1+"\r\n"+bold(player2.name+": ")+time2)
-        
-        await ctx.send(embed=embed)
+        if(not errorFlag):
+            embed = discord.Embed(title=player1.name+" vs "+player2.name,description=operator.upper()+"比較",colour=discord.Colour.green())
+            embed.set_thumbnail(url=imgUrl)
+            embed.add_field(name=bold("勝/敗"), value=bold(player1.name+": ")+str(data1.wins)+"/"+str(data1.losses)+"  |  "+win_ratio1+"\r\n"+bold(player2.name+": ")+str(data2.wins)+"/"+str(data2.losses)+"  |  "+win_ratio2)
+            embed.add_field(name=bold("殺/死"), value=bold(player1.name+": ")+str(data1.kills)+"/"+str(data1.deaths)+"  |  "+kd1+"\r\n"+bold(player2.name+": ")+str(data2.kills)+"/"+str(data2.deaths)+"  |  "+kd2, inline=True)
+            embed.add_field(name=bold("爆頭"), value=bold(player1.name+": ")+str(data1.headshots)+"\r\n"+bold(player2.name+": ")+str(data2.headshots))
+            embed.add_field(name=bold("近戰"), value=bold(player1.name+": ")+str(data1.melees)+"\r\n"+bold(player2.name+": ")+str(data2.melees), inline=True)
+            embed.add_field(name=bold("被拉起"), value=bold(player1.name+": ")+str(data1.dbnos)+"\r\n"+bold(player2.name+":")+str(data2.dbnos))
+            embed.add_field(name=bold(data1.statistic_name), value=bold(player1.name+": ")+str(data1.statistic)+"\r\n"+bold(player2.name+": ")+str(data2.statistic), inline=True)
+            embed.add_field(name=bold("經驗值"),value=bold(player1.name+": ")+str(data1.xp)+"\r\n"+bold(player2.name+": ")+str(data2.xp))
+            embed.add_field(name=bold("遊玩時間"),value=bold(player1.name+": ")+time1+"\r\n"+bold(player2.name+": ")+time2)
+            
+            await ctx.send(embed=embed)
     
 ##玩家資訊
 @bot.command()
