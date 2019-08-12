@@ -71,6 +71,7 @@ async def on_ready():
 @bot.command()
 async def operator(ctx,user,operator):
     try:
+        operator = operator.lower()
         player = await auth.get_player(user, r6.Platforms.UPLAY)
         
         data = await player.load_operator(operator)
@@ -111,6 +112,7 @@ async def operator(ctx,user,operator):
 @bot.command()
 async def vsoperator(ctx,user1,user2,operator):
     errorFlag = False
+    operator = operator.lower()
     try:
         player1 = await auth.get_player(user1, r6.Platforms.UPLAY)
     except Exception as error:
