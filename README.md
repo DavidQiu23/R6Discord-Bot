@@ -23,7 +23,7 @@
     sudo python3 -m pip install idna_ssl
     sudo python3 -m pip install typing_extensions
 ***
-###2019/08/12更新
+### 2019/08/12更新
 部屬至Heroku
 ===========
 * 新增Procfile檔案 內容 worker: python main.py (worker: [語言] [檔案])
