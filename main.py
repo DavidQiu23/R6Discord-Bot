@@ -132,13 +132,19 @@ async def vsoperator(ctx,user1,user2,operator):
     
         imgUrl = operatorImg[operator]    
         
-        win_ratio1 = str(round((data1.wins/(data1.wins+data1.losses))*100,2))+"%"
-        kd1 = str(round(data1.kills/data1.deaths,2))
-        time1 = str(datetime.timedelta(seconds=data1.time_played))
+        if(data1.wins == 0 and data1.losses == 0):
+            await ctx.send("用戶1此角色無資料無法比較")
+        else:
+            win_ratio1 = str(round((data1.wins/(data1.wins+data1.losses))*100,2))+"%"
+            kd1 = str(round(data1.kills/data1.deaths,2))
+            time1 = str(datetime.timedelta(seconds=data1.time_played))
         
-        win_ratio2 = str(round((data2.wins/(data2.wins+data2.losses))*100,2))+"%"
-        kd2 = str(round(data2.kills/data2.deaths,2))
-        time2 = str(datetime.timedelta(seconds=data2.time_played))
+        if(data2.wins == 0 and data2.losses == 0):
+            await ctx.send("用戶2此角色無資料無法比較")
+        else:
+            win_ratio2 = str(round((data2.wins/(data2.wins+data2.losses))*100,2))+"%"
+            kd2 = str(round(data2.kills/data2.deaths,2))
+            time2 = str(datetime.timedelta(seconds=data2.time_played))
         
         embed = discord.Embed(title=player1.name+" vs "+player2.name,description=operator.upper()+"比較",colour=discord.Colour.green())
         embed.set_thumbnail(url=imgUrl)
