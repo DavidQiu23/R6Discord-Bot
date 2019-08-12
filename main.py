@@ -77,7 +77,7 @@ async def operator(ctx,user,operator):
         
         imgUrl = operatorImg[operator]
         
-        if(data.wins == 0 && data.losses == 0):
+        if(data.wins == 0 and data.losses == 0):
             win_ratio = 0+"%"
             kd = 0
         else
