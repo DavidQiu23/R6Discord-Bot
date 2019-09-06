@@ -188,6 +188,21 @@ async def player(ctx,user):
     except Exception as error:
         #await ctx.send("找不到用戶，請檢查用戶名是否正確")
         await ctx.send(error)
+
+@bot.command()
+async def rank(ctx,user):
+    try:
+        player = await auth.get_player(user,r6.Platforms.UPLAY)
+        await player.load_queues()
+        
+        data = player.ranked
+        
+        await ctx.send(data)
+        
+    except Exception as error:
+        await ctx.send(error)
+        
+        
         
 ##自定義說明
 @bot.command()
