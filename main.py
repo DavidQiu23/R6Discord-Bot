@@ -153,14 +153,14 @@ async def vsoperator(ctx,user1,user2,operator):
         if(not errorFlag):
             embed = discord.Embed(title=player1.name+" vs "+player2.name,description=operator.upper()+"比較",colour=discord.Colour.green())
             embed.set_thumbnail(url=imgUrl)
-            embed.add_field(name=bold("勝/敗"), value=bold(player1.name+": ")+str(data1.wins)+"/"+str(data1.losses)+"  |  "+win_ratio1+"\r\n"+bold(player2.name+": ")+str(data2.wins)+"/"+str(data2.losses)+"  |  "+win_ratio2)
-            embed.add_field(name=bold("殺/死"), value=bold(player1.name+": ")+str(data1.kills)+"/"+str(data1.deaths)+"  |  "+kd1+"\r\n"+bold(player2.name+": ")+str(data2.kills)+"/"+str(data2.deaths)+"  |  "+kd2, inline=True)
-            embed.add_field(name=bold("爆頭"), value=bold(player1.name+": ")+str(data1.headshots)+"\r\n"+bold(player2.name+": ")+str(data2.headshots))
-            embed.add_field(name=bold("近戰"), value=bold(player1.name+": ")+str(data1.melees)+"\r\n"+bold(player2.name+": ")+str(data2.melees), inline=True)
-            embed.add_field(name=bold("被拉起"), value=bold(player1.name+": ")+str(data1.dbnos)+"\r\n"+bold(player2.name+":")+str(data2.dbnos))
-            embed.add_field(name=bold(data1.statistic_name), value=bold(player1.name+": ")+str(data1.statistic)+"\r\n"+bold(player2.name+": ")+str(data2.statistic), inline=True)
-            embed.add_field(name=bold("經驗值"),value=bold(player1.name+": ")+str(data1.xp)+"\r\n"+bold(player2.name+": ")+str(data2.xp))
-            embed.add_field(name=bold("遊玩時間"),value=bold(player1.name+": ")+time1+"\r\n"+bold(player2.name+": ")+time2)
+            embed.add_field(name=bold("勝/敗"), value=bold(player1.name+": ")+str(data1.wins)+"/"+str(data1.losses)+"  |  "+win_ratio1+newLine()+bold(player2.name+": ")+str(data2.wins)+"/"+str(data2.losses)+"  |  "+win_ratio2)
+            embed.add_field(name=bold("殺/死"), value=bold(player1.name+": ")+str(data1.kills)+"/"+str(data1.deaths)+"  |  "+kd1+newLine()+bold(player2.name+": ")+str(data2.kills)+"/"+str(data2.deaths)+"  |  "+kd2, inline=True)
+            embed.add_field(name=bold("爆頭"), value=bold(player1.name+": ")+str(data1.headshots)+newLine()+bold(player2.name+": ")+str(data2.headshots))
+            embed.add_field(name=bold("近戰"), value=bold(player1.name+": ")+str(data1.melees)+newLine()+bold(player2.name+": ")+str(data2.melees), inline=True)
+            embed.add_field(name=bold("被拉起"), value=bold(player1.name+": ")+str(data1.dbnos)+newLine()+bold(player2.name+":")+str(data2.dbnos))
+            embed.add_field(name=bold(data1.statistic_name), value=bold(player1.name+": ")+str(data1.statistic)+newLine()+bold(player2.name+": ")+str(data2.statistic), inline=True)
+            embed.add_field(name=bold("經驗值"),value=bold(player1.name+": ")+str(data1.xp)+newLine()+bold(player2.name+": ")+str(data2.xp))
+            embed.add_field(name=bold("遊玩時間"),value=bold(player1.name+": ")+time1+newLine()+bold(player2.name+": ")+time2)
             
             await ctx.send(embed=embed)
     
@@ -178,10 +178,10 @@ async def player(ctx,user):
         
         embed = discord.Embed(colour=discord.Colour.blue())
         embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
-        embed.add_field(name=bold("擊殺資訊"),value=bold("擊殺:")+str(player.kills)+" | "+bold("死亡:")+str(player.deaths)+" | "+bold("KD:")+kd+"\r\n"+bold("近戰:")+str(player.melee_kills)+" | "+bold("穿透擊殺:")+str(player.penetration_kills)+"\r\n"+bold("自殺:")+str(player.suicides)+" | "+bold("盲殺:")+str(player.blind_kills),inline=False)
-        embed.add_field(name=bold("射擊資訊"),value=bold("擊中:")+str(player.bullets_hit)+" | "+bold("爆頭:")+str(player.headshots)+"\r\n"+bold("爆頭率:")+headshot_ratio,inline=False)
-        embed.add_field(name=bold("場次資訊"),value=bold("勝場:")+str(player.matches_won)+" | "+bold("敗場:")+str(player.matches_lost)+"\r\n"+bold("總場數:")+str(player.matches_played)+" | "+bold("勝率:")+win_ratio,inline=False)
-        embed.add_field(name=bold("團隊貢獻"),value=bold("助攻:")+str(player.kill_assists)+" | "+bold("擊倒:")+str(player.dbnos)+"\r\n"+bold("協助擊倒:")+str(player.dbno_assists)+" | "+bold("破壞:")+str(player.gadgets_destroyed)+"\r\n"+bold("拉起:")+str(player.revives)+" | "+bold("拉起失敗:")+str(player.revives_denied),inline=False)
+        embed.add_field(name=bold("擊殺資訊"),value=bold("擊殺:")+str(player.kills)+" | "+bold("死亡:")+str(player.deaths)+" | "+bold("KD:")+kd+newLine()+bold("近戰:")+str(player.melee_kills)+" | "+bold("穿透擊殺:")+str(player.penetration_kills)+newLine()+bold("自殺:")+str(player.suicides)+" | "+bold("盲殺:")+str(player.blind_kills),inline=False)
+        embed.add_field(name=bold("射擊資訊"),value=bold("擊中:")+str(player.bullets_hit)+" | "+bold("爆頭:")+str(player.headshots)+newLine()+bold("爆頭率:")+headshot_ratio,inline=False)
+        embed.add_field(name=bold("場次資訊"),value=bold("勝場:")+str(player.matches_won)+" | "+bold("敗場:")+str(player.matches_lost)+newLine()+bold("總場數:")+str(player.matches_played)+" | "+bold("勝率:")+win_ratio,inline=False)
+        embed.add_field(name=bold("團隊貢獻"),value=bold("助攻:")+str(player.kill_assists)+" | "+bold("擊倒:")+str(player.dbnos)+newLine()+bold("協助擊倒:")+str(player.dbno_assists)+" | "+bold("破壞:")+str(player.gadgets_destroyed)+newLine()+bold("拉起:")+str(player.revives)+" | "+bold("拉起失敗:")+str(player.revives_denied),inline=False)
         embed.add_field(name=bold("遊玩資訊"),value=bold("經驗值:")+str(player.total_xp)+" | "+bold("時數:")+time,inline=False)
         
         await ctx.send(embed=embed)
