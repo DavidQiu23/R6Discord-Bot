@@ -198,9 +198,16 @@ async def ranked(ctx,user):
         
         data = player.ranked
         
+        if(data.wins == 0 and data.losses == 0):
+            await ctx.send("此玩家無RANK資料")
+        else:
+            win_ratio = str(round((data.won/(data.won+data.lost))*100,2))+"%"
+            kd = str(round(data.kills/data.deaths,2))
+            time = str(datetime.timedelta(seconds=data.time_played))
+        
         embed = discord.Embed(colour=discord.Colour.gold())
         embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
-        embed.add_field(name=bold("遊玩資訊"),value=bold("勝場:")+str(data.won))
+        embed.add_field(name=bold("遊玩資訊"),value=bold("勝場:")+str(data.won)+" | "+bold("敗場:")+str(data.lost)+newLine()+bold("場數:")+str(data.played)+newLine()+bold("勝率:")+win_ratio+newLine()+bold("遊玩時間:")+time)
         
         await ctx.send(embed=embed)
         
@@ -222,5 +229,8 @@ async def help(ctx):
 ##粗體字
 def bold(text):
     return "**"+str(text)+"**"
+##換行
+def newLine():
+    return "\r\n"
     
 bot.run(os.getenv("DISCORD-KEY",None))
