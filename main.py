@@ -31,7 +31,7 @@ operatorImg ={
     "ash": "https://i.pinimg.com/originals/2f/17/12/2f1712fb7da4654b4de29132c6cf702c.gif",
     "twitch": "https://marcopixel.eu/r6-operatoricons/assets/png/twitch.png",
     "castle": "https://i.redd.it/yx9glfk1ls7y.gif",
-    "buck": "https://bang-phinf.pstatic.net/a/30bebd/5_6ceUd018bng18ylk8u7ncill_p126y3.gif",
+    "buck": "https://marcopixel.eu/r6-operatoricons/icons/png/buck.png",
     "capitao": "https://thumbs.gfycat.com/InconsequentialEmotionalHind-size_restricted.gif",
     "jackal": "https://thumbs.gfycat.com/GreenLimpingInexpectatumpleco-max-1mb.gif",
     "mira": "https://i.imgur.com/ztYA0kP.gif",
