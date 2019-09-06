@@ -208,6 +208,7 @@ async def ranked(ctx,user):
         embed = discord.Embed(colour=discord.Colour.gold())
         embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
         embed.add_field(name=bold("遊玩資訊"),value=bold("勝場:")+str(data.won)+" | "+bold("敗場:")+str(data.lost)+newLine()+bold("場數:")+str(data.played)+newLine()+bold("勝率:")+win_ratio+newLine()+bold("遊玩時間:")+time)
+        embed.add_field(name=bold("擊殺資訊"),value=bold("擊殺:")+str(data.kills)+" | "+bold("死亡:")+str(data.deaths)+newLine()+bold("KD:")+kd)
         
         await ctx.send(embed=embed)
         
