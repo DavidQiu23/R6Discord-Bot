@@ -190,14 +190,19 @@ async def player(ctx,user):
         await ctx.send(error)
 
 @bot.command()
-async def rank(ctx,user):
+async def ranked(ctx,user):
     try:
         player = await auth.get_player(user,r6.Platforms.UPLAY)
+        await player.load_general()
         await player.load_queues()
         
         data = player.ranked
         
-        await ctx.send(data)
+        embed = discord.Embed(colour=discord.Colour.gold())
+        embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
+        embed.add_field(name=bold("遊玩資訊"),value=bold("勝場:")+str(data.won))
+        
+        await ctx.send(embed=embed)
         
     except Exception as error:
         await ctx.send(error)
