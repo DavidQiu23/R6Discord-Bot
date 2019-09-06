@@ -205,7 +205,7 @@ async def ranked(ctx,user):
             kd = str(round(data.kills/data.deaths,2))
             time = str(datetime.timedelta(seconds=data.time_played))
         
-        embed = discord.Embed(colour=discord.Colour.gold())
+        embed = discord.Embed(colour=discord.Colour.red())
         embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
         embed.add_field(name=bold("遊玩資訊"),value=bold("勝場:")+str(data.won)+" | "+bold("敗場:")+str(data.lost)+newLine()+bold("場數:")+str(data.played)+newLine()+bold("勝率:")+win_ratio+newLine()+bold("遊玩時間:")+time)
         embed.add_field(name=bold("擊殺資訊"),value=bold("擊殺:")+str(data.kills)+" | "+bold("死亡:")+str(data.deaths)+newLine()+bold("KD:")+kd)
@@ -223,7 +223,8 @@ async def help(ctx):
     embed = discord.Embed(title="指令說明",description="[]為必要參數",colour=discord.Colour.gold())
     embed.add_field(name= bold("d.operator [user] [operator]"),value= "查詢各幹員資訊",inline=False)
     embed.add_field(name= bold("d.vsoperator [user1] [user2] [operator]"),value= "比較各幹員資訊",inline=False)
-    embed.add_field(name= bold("d.player [user]"),value="查詢角色資訊",inline=False)
+    embed.add_field(name= bold("d.player [user]"),value="查詢玩家資訊",inline=False)
+    embed.add_field(name= bold("d.ranked [user]"),value="查詢玩家排位",inline=False)
     
     await ctx.send(embed=embed)
 
