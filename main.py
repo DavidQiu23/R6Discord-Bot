@@ -2,7 +2,7 @@ import datetime
 import discord
 import r6sapi as r6
 import os
-import python-psycopg2 as sql
+import psycopg2 as sql
 from discord.ext import commands
 
 operatorImg ={
