@@ -223,7 +223,7 @@ async def count(ctx):
     try:
         conn = sql.connect(database="dafjeikpmmlbso", user="kzwxmrqfzvjiff", password="7833b1bd34bc84051542bfddc2638bf8581444943150a510a1ad74355860e4f1", host="ec2-174-129-238-192.compute-1.amazonaws.com", port="5432")
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO USER_INFO VALUES ('Rush.your.b', 'Casual', 50,100,123,321,CURRENT_TIMESTAMP)")
+        cursor.execute("INSERT INTO \"USER_INFO\" VALUES ('Rush.your.b', 'Casual', 50,100,123,321,CURRENT_TIMESTAMP)")
 
         conn.commit()
         await ctx.send("INSERT")
