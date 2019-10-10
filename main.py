@@ -219,14 +219,50 @@ async def ranked(ctx,user):
 
 ##結算歷史戰績
 @bot.command()
-async def count(ctx):
+async def count(ctx,user):
     try:
         conn = sql.connect(database="dafjeikpmmlbso", user="kzwxmrqfzvjiff", password="7833b1bd34bc84051542bfddc2638bf8581444943150a510a1ad74355860e4f1", host="ec2-174-129-238-192.compute-1.amazonaws.com", port="5432")
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO \"USER_INFO\" VALUES ('Rush.your.b', 'Casual', 50,100,123,321,CURRENT_TIMESTAMP)")
+        cur = conn.cursor()
+
+        player = await auth.get_player(user,r6.Platforms.UPLAY)
+        await player.load_general()
+        await player.load_queues()
+
+        rankData = player.ranked
+        casualData = player.casual
+
+        sqlQryCasual = "SELECT KILL,DEATH,WIN,LOSS FROM \"COMPANY\" WHERE \"USER_NAME\" LIKE %s AND \"GAME_MODE\" = 'Casual' ORDER BY \"QUERY_TIME\" DESC LIMIT 1"
+        sqlQryRank = "SELECT KILL,DEATH,WIN,LOSS FROM \"COMPANY\" WHERE \"USER_NAME\" LIKE %s AND \"GAME_MODE\" = 'Rank' ORDER BY \"QUERY_TIME\" DESC LIMIT 1"
+        sqlInsert = "INSERT INTO \"USER_INFO\" VALUES (%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP+ interval '8 hours')"
+        sqlQryData = "SELECT * FROM \"USER_INFO\" WHERE \"USER_NAME\" LIKE %s ORDER BY \"QUERY_TIME\" DESC LIMIT 5"
+
+        ##休閒戰績區塊       
+        cur.execute(sqlQryCasual,(player.name))
+        casualRows = cur.fetchall()
+        if(len(casualRows)==0):
+            cur.execute(sqlInsert,(player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
+        else:
+            for row in casualRows:
+                if(row[0]!=casualData.kills or row[1]!=casualData.deaths):
+                    cur.execute(sqlInsert,(player.name,'Casual',casualData.won-row[2],casualData.lost-row[3],casualData.kills-row[0],casualData.deaths-row[1]))
+
+        ##排名戰績區塊
+        cur.execute(sqlQryRank,(player.name))
+        rankRows = cur.fetchall()
+        if(len(rankRows)==0):
+            cur.execute(sqlInsert,(player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
+        else:
+            for row in rankRows:
+                if(row[0]!=rankData.kills or row[1]!=rankData.deaths):
+                    cur.execute(sqlInsert,(player.name,'Rank',rankData.won-row[2],rankData.lost-row[3],rankData.kills-row[0],rankData.deaths-row[1]))
+        
+        ##製作訊息區塊
+        cur.execute(sqlQryData,(player.name))
+        dataRows = cur.fetchall()
+        for row in dataRows:
+            await ctx.send(row[0]+row[1])
 
         conn.commit()
-        await ctx.send("INSERT")
         conn.close()
 
     except Exception as error:
