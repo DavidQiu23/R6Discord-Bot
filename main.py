@@ -264,9 +264,9 @@ async def count(ctx,user):
         rankStr = ""
         for row in dataRows:
             if(row[1]=='Casual'):
-                casualStr += "時間:"+row[6]+"  模式:"+row[1]+"  勝/負:"+row[2]+"/"+row[3]+"  殺/死:"+row[4]+"/"+row[5]
+                casualStr += "時間:"+str(row[6])+"  模式:"+str(row[1])+"  勝/負:"+str(row[2])+"/"+str(row[3])+"  殺/死:"+str(row[4])+"/"+str(row[5])
             else:
-                rankStr += "時間:"+row[6]+"  模式:"+row[1]+"  勝/負:"+row[2]+"/"+row[3]+"  殺/死:"+row[4]+"/"+row[5]
+                rankStr += "時間:"+str(row[6])+"  模式:"+str(row[1])+"  勝/負:"+str(row[2])+"/"+str(row[3])+"  殺/死:"+str(row[4])+"/"+str(row[5])
 
         embed.add_field(name=bold("休閒"),value=casualStr)
         embed.add_field(name=bold("排名"),value=rankStr)
