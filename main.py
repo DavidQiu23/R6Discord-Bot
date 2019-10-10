@@ -234,7 +234,7 @@ async def count(ctx,user):
         sqlQryCasual = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_NAME\" LIKE %s AND \"GAME_MODE\" = 'Casual' ORDER BY \"QUERY_TIME\" DESC LIMIT 1"
         sqlQryRank = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_NAME\" LIKE %s AND \"GAME_MODE\" = 'Rank' ORDER BY \"QUERY_TIME\" DESC LIMIT 1"
         sqlInsert = "INSERT INTO \"USER_INFO\" VALUES (%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP+ interval '8 hours')"
-        sqlQryData = "SELECT * FROM \"USER_INFO\" WHERE \"USER_NAME\" LIKE %s ORDER BY \"QUERY_TIME\" DESC LIMIT 5"
+        sqlQryData = "SELECT * FROM \"USER_INFO\" WHERE \"USER_NAME\" LIKE %s ORDER BY \"QUERY_TIME\" DESC LIMIT 10"
 
         ##休閒戰績區塊       
         cur.execute(sqlQryCasual,(player.name,))
@@ -264,9 +264,9 @@ async def count(ctx,user):
         rankStr = ""
         for row in dataRows:
             if(row[1]=='Casual'):
-                casualStr += "時間:"+str(row[6])+"  模式:"+str(row[1])+"  勝/負:"+str(row[2])+"/"+str(row[3])+"  殺/死:"+str(row[4])+"/"+str(row[5])
+                casualStr += "時間:"+str(row[6])[:19]+"    勝/負:"+str(row[2])+"/"+str(row[3])+"    殺/死:"+str(row[4])+"/"+str(row[5])+newLine()
             else:
-                rankStr += "時間:"+str(row[6])+"  模式:"+str(row[1])+"  勝/負:"+str(row[2])+"/"+str(row[3])+"  殺/死:"+str(row[4])+"/"+str(row[5])
+                rankStr += "時間:"+str(row[6])[:19]+"    勝/負:"+str(row[2])+"/"+str(row[3])+"    殺/死:"+str(row[4])+"/"+str(row[5])+newLine()
 
         embed.add_field(name=bold("休閒"),value=casualStr)
         embed.add_field(name=bold("排名"),value=rankStr)
