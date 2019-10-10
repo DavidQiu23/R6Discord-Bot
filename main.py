@@ -2,6 +2,7 @@ import datetime
 import discord
 import r6sapi as r6
 import os
+import python-psycopg2 as sql
 from discord.ext import commands
 
 operatorImg ={
@@ -189,6 +190,7 @@ async def player(ctx,user):
         #await ctx.send("找不到用戶，請檢查用戶名是否正確")
         await ctx.send(error)
 
+##查詢玩家排位
 @bot.command()
 async def ranked(ctx,user):
     try:
@@ -204,17 +206,30 @@ async def ranked(ctx,user):
             win_ratio = str(round((data.won/(data.won+data.lost))*100,2))+"%"
             kd = str(round(data.kills/data.deaths,2))
             time = str(datetime.timedelta(seconds=data.time_played))
-        
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
-        embed.add_field(name=bold("遊玩資訊"),value=bold("勝場:")+str(data.won)+" | "+bold("敗場:")+str(data.lost)+newLine()+bold("場數:")+str(data.played)+newLine()+bold("勝率:")+win_ratio+newLine()+bold("遊玩時間:")+time)
-        embed.add_field(name=bold("擊殺資訊"),value=bold("擊殺:")+str(data.kills)+" | "+bold("死亡:")+str(data.deaths)+newLine()+bold("KD:")+kd)
-        
-        await ctx.send(embed=embed)
+            
+            embed = discord.Embed(colour=discord.Colour.red())
+            embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
+            embed.add_field(name=bold("遊玩資訊"),value=bold("勝場:")+str(data.won)+" | "+bold("敗場:")+str(data.lost)+newLine()+bold("場數:")+str(data.played)+newLine()+bold("勝率:")+win_ratio+newLine()+bold("遊玩時間:")+time)
+            embed.add_field(name=bold("擊殺資訊"),value=bold("擊殺:")+str(data.kills)+" | "+bold("死亡:")+str(data.deaths)+newLine()+bold("KD:")+kd)
+            
+            await ctx.send(embed=embed)
         
     except Exception as error:
         await ctx.send(error)
-        
+
+##結算歷史戰績
+@bot.command()
+async def count(ctx):
+    try:
+        conn = sql.connect(database="dafjeikpmmlbso", user="kzwxmrqfzvjiff", password="7833b1bd34bc84051542bfddc2638bf8581444943150a510a1ad74355860e4f1", host="ec2-174-129-238-192.compute-1.amazonaws.com", port="5432")
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO USER_INFO VALUES ('Rush.your.b', 'Casual', 50,100,123,321,CURRENT_TIMESTAMP)")
+
+        conn.commit()
+        conn.close()
+    except Exception as error:
+        conn.close()
+        await ctx.send(error)
         
         
 ##自定義說明

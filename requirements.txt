@@ -1,2 +1,3 @@
 discord
 r6sapi
+python-psycopg2
