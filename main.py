@@ -259,9 +259,19 @@ async def count(ctx,user):
         ##製作訊息區塊
         cur.execute(sqlQryData,(player.name,))
         dataRows = cur.fetchall()
+        embed = discord.Embed(title="近日戰績",colour=discord.Colour.orange())
+        casualStr = ""
+        rankStr = ""
         for row in dataRows:
-            await ctx.send(row[0]+row[1])
+            if(row[1]=='Casual'):
+                casualStr += "時間:"+row[6]+"  模式:"+row[1]+"  勝/負:"+row[2]+"/"+row[3]+"  殺/死:"+row[4]+"/"+row[5]
+            else:
+                rankStr += "時間:"+row[6]+"  模式:"+row[1]+"  勝/負:"+row[2]+"/"+row[3]+"  殺/死:"+row[4]+"/"+row[5]
 
+        embed.add_field(name=bold("休閒"),value=casualStr)
+        embed.add_field(name=bold("排名"),value=rankStr)
+
+        await ctx.send(embed=embed)
         conn.commit()
         conn.close()
 
