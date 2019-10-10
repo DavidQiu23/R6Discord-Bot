@@ -237,7 +237,7 @@ async def count(ctx,user):
         sqlQryData = "SELECT * FROM \"USER_INFO\" WHERE \"USER_NAME\" LIKE %s ORDER BY \"QUERY_TIME\" DESC LIMIT 5"
 
         ##休閒戰績區塊       
-        cur.execute(sqlQryCasual,(player.name))
+        cur.execute(sqlQryCasual,(player.name,))
         casualRows = cur.fetchall()
         if(len(casualRows)==0):
             cur.execute(sqlInsert,(player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
@@ -247,7 +247,7 @@ async def count(ctx,user):
                     cur.execute(sqlInsert,(player.name,'Casual',casualData.won-row[2],casualData.lost-row[3],casualData.kills-row[0],casualData.deaths-row[1]))
 
         ##排名戰績區塊
-        cur.execute(sqlQryRank,(player.name))
+        cur.execute(sqlQryRank,(player.name,))
         rankRows = cur.fetchall()
         if(len(rankRows)==0):
             cur.execute(sqlInsert,(player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
@@ -257,7 +257,7 @@ async def count(ctx,user):
                     cur.execute(sqlInsert,(player.name,'Rank',rankData.won-row[2],rankData.lost-row[3],rankData.kills-row[0],rankData.deaths-row[1]))
         
         ##製作訊息區塊
-        cur.execute(sqlQryData,(player.name))
+        cur.execute(sqlQryData,(player.name,))
         dataRows = cur.fetchall()
         for row in dataRows:
             await ctx.send(row[0]+row[1])
