@@ -226,6 +226,7 @@ async def count(ctx):
         cursor.execute("INSERT INTO USER_INFO VALUES ('Rush.your.b', 'Casual', 50,100,123,321,CURRENT_TIMESTAMP)")
 
         conn.commit()
+        ctx.send("INSERT"")
         conn.close()
     except Exception as error:
         conn.close()
