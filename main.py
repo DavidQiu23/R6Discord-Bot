@@ -288,6 +288,7 @@ async def help(ctx):
     embed.add_field(name= bold("d.vsoperator [user1] [user2] [operator]"),value= "比較各幹員資訊",inline=False)
     embed.add_field(name= bold("d.player [user]"),value="查詢玩家資訊",inline=False)
     embed.add_field(name= bold("d.ranked [user]"),value="查詢玩家排位",inline=False)
+    embed.add_field(name= bold("d.count [user]"),value="查詢玩家近況)",inline=False)
     
     await ctx.send(embed=embed)
 
