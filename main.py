@@ -260,7 +260,7 @@ async def count(ctx,user):
             cur.execute(sqlInserLog,(player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
         else:
             ##更新總戰績
-            cur.execute(sqlUpdateRank,(casualData.kills,casualData.deaths,casualData.won,casualData.lost,player.name,'Rank'))
+            cur.execute(sqlUpdateRank,(rankData.kills,rankData.deaths,rankData.won,rankData.lost,player.name,'Rank'))
             for row in rankRows:
                 if(row[0]!=rankData.kills or row[1]!=rankData.deaths):
                     cur.execute(sqlInserLog,(player.name,'Rank',rankData.won-row[2],rankData.lost-row[3],rankData.kills-row[0],rankData.deaths-row[1]))
