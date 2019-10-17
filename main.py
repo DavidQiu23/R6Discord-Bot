@@ -242,8 +242,8 @@ async def count(ctx,user):
         cur.execute(sqlQryCasual,(player.name,))
         casualRows = cur.fetchall()
         if(len(casualRows)==0):
-            cur.execute(sqlInsert,('\"USER_INFO\"',player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
-            cur.execute(sqlInsert,('\"GAME_LOG\"',player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
+            cur.execute(sqlInsert,('USER_INFO',player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
+            cur.execute(sqlInsert,('GAME_LOG',player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
         else:
             ##更新總戰績
             cur.execute(sqlUpdateCasual,(player.name,'Casual'))
