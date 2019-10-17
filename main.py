@@ -235,14 +235,15 @@ async def count(ctx,user):
         sqlUpdateRank = "UPDATE \"USER_INFO\" SET \"KILL\" = %s, \"DEATH\" = %s, \"WIN\" = %s,\"LOSS\" = %s WHERE \"USER_NAME\" LIKE %s AND \"GAME_MODE\" = 'Rank'"
         sqlQryCasual = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_NAME\" LIKE %s AND \"GAME_MODE\" = 'Casual' ORDER BY \"QUERY_TIME\" DESC LIMIT 1"
         sqlQryRank = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_NAME\" LIKE %s AND \"GAME_MODE\" = 'Rank' ORDER BY \"QUERY_TIME\" DESC LIMIT 1"
-        sqlInsert = "INSERT INTO \"GAME_LOG\" VALUES (%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP+ interval '8 hours')"
-        sqlQryData = "SELECT * FROM \"USER_INFO\" WHERE \"USER_NAME\" LIKE %s ORDER BY \"QUERY_TIME\" DESC LIMIT 10"
+        sqlInsert = "INSERT INTO %s VALUES (%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP+ interval '8 hours')"
+        sqlQryData = "SELECT * FROM \"GAME_LOG\" WHERE \"USER_NAME\" LIKE %s ORDER BY \"QUERY_TIME\" DESC LIMIT 10"
         
         ##休閒戰績區塊
         cur.execute(sqlQryCasual,(player.name,))
         casualRows = cur.fetchall()
         if(len(casualRows)==0):
-            cur.execute(sqlInsert,(player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
+            cur.execute(sqlInsert,('\"USER_INFO\"',player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
+            cur.execute(sqlInsert,('\"GAME_LOG\"',player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
         else:
             ##更新總戰績
             cur.execute(sqlUpdateCasual,(player.name,'Casual'))
@@ -254,7 +255,8 @@ async def count(ctx,user):
         cur.execute(sqlQryRank,(player.name,))
         rankRows = cur.fetchall()
         if(len(rankRows)==0):
-            cur.execute(sqlInsert,(player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
+            cur.execute(sqlInsert,('\"USER_INFO\"',player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
+            cur.execute(sqlInsert,('\"GAME_LOG\"',player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
         else:
             ##更新總戰績
             cur.execute(sqlUpdateRank,(player.name,'Rank'))
