@@ -233,8 +233,8 @@ async def count(ctx,user):
 
         sqlUpdateCasual = "UPDATE \"USER_INFO\" SET \"KILL\" = %s, \"DEATH\" = %s, \"WIN\" = %s,\"LOSS\" = %s WHERE \"USER_NAME\" LIKE %s AND \"GAME_MODE\" = 'Casual'"
         sqlUpdateRank = "UPDATE \"USER_INFO\" SET \"KILL\" = %s, \"DEATH\" = %s, \"WIN\" = %s,\"LOSS\" = %s WHERE \"USER_NAME\" LIKE %s AND \"GAME_MODE\" = 'Rank'"
-        sqlQryCasual = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_NAME\" LIKE %s AND \"GAME_MODE\" = 'Casual' ORDER BY \"QUERY_TIME\" DESC LIMIT 1"
-        sqlQryRank = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_NAME\" LIKE %s AND \"GAME_MODE\" = 'Rank' ORDER BY \"QUERY_TIME\" DESC LIMIT 1"
+        sqlQryCasual = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_NAME\" LIKE %s AND \"GAME_MODE\" = 'Casual' DESC LIMIT 1"
+        sqlQryRank = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_NAME\" LIKE %s AND \"GAME_MODE\" = 'Rank' DESC LIMIT 1"
         sqlInsertInfo = "INSERT INTO \"USER_INFO\" VALUES (%s,%s,%s,%s,%s,%s)"
         sqlInserLog = "INSERT INTO \"GAME_LOG\" VALUES (%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP+ interval '8 hours')"
         sqlQryData = "SELECT * FROM \"GAME_LOG\" WHERE \"USER_NAME\" LIKE %s ORDER BY \"QUERY_TIME\" DESC LIMIT 10"
@@ -243,27 +243,27 @@ async def count(ctx,user):
         cur.execute(sqlQryCasual,(player.name,))
         casualRows = cur.fetchall()
         if(len(casualRows)==0):
-            cur.execute(sqlInsert,(player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
-            cur.execute(sqlInsert,(player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
+            cur.execute(sqlInsertInfo,(player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
+            cur.execute(sqlInserLog,(player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
         else:
             ##更新總戰績
             cur.execute(sqlUpdateCasual,(player.name,'Casual'))
             for row in casualRows:
                 if(row[0]!=casualData.kills or row[1]!=casualData.deaths):
-                    cur.execute(sqlInsert,(player.name,'Casual',casualData.won-row[2],casualData.lost-row[3],casualData.kills-row[0],casualData.deaths-row[1]))
+                    cur.execute(sqlInserLog,(player.name,'Casual',casualData.won-row[2],casualData.lost-row[3],casualData.kills-row[0],casualData.deaths-row[1]))
 
         ##排名戰績區塊
         cur.execute(sqlQryRank,(player.name,))
         rankRows = cur.fetchall()
         if(len(rankRows)==0):
-            cur.execute(sqlInsert,(player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
-            cur.execute(sqlInsert,(player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
+            cur.execute(sqlInsertInfo,(player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
+            cur.execute(sqlInserLog,(player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
         else:
             ##更新總戰績
             cur.execute(sqlUpdateRank,(player.name,'Rank'))
             for row in rankRows:
                 if(row[0]!=rankData.kills or row[1]!=rankData.deaths):
-                    cur.execute(sqlInsert,(player.name,'Rank',rankData.won-row[2],rankData.lost-row[3],rankData.kills-row[0],rankData.deaths-row[1]))
+                    cur.execute(sqlInserLog,(player.name,'Rank',rankData.won-row[2],rankData.lost-row[3],rankData.kills-row[0],rankData.deaths-row[1]))
         
         ##製作訊息區塊
         cur.execute(sqlQryData,(player.name,))
