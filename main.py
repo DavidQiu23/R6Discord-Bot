@@ -269,6 +269,7 @@ async def count(ctx,user):
         cur.execute(sqlQryData,(player.name,))
         dataRows = cur.fetchall()
         embed = discord.Embed(title="近日戰績",colour=discord.Colour.orange())
+        embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
         casualStr = ""
         rankStr = ""
         for row in dataRows:
