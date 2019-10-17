@@ -255,8 +255,8 @@ async def count(ctx,user):
         cur.execute(sqlQryRank,(player.name,))
         rankRows = cur.fetchall()
         if(len(rankRows)==0):
-            cur.execute(sqlInsert,('\"USER_INFO\"',player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
-            cur.execute(sqlInsert,('\"GAME_LOG\"',player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
+            cur.execute(sqlInsert,('USER_INFO',player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
+            cur.execute(sqlInsert,('GAME_LOG',player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
         else:
             ##更新總戰績
             cur.execute(sqlUpdateRank,(player.name,'Rank'))
