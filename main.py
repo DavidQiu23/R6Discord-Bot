@@ -287,7 +287,7 @@ async def count(ctx,user):
 
     except Exception as error:
         conn.close()
-        await ctx.send(error)
+        await ctx.send(error + casualStr + "...." + rankStr)
         
         
 ##自定義說明
