@@ -280,8 +280,6 @@ async def count(ctx,user):
 
         embed.add_field(name=bold("休閒"),value=casualStr)
         embed.add_field(name=bold("排名"),value=rankStr)
-        await ctx.send(casualStr)
-        await ctx.send(rankStr)
         await ctx.send(embed=embed)
         conn.commit()
         conn.close()
