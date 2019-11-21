@@ -266,7 +266,7 @@ async def count(ctx,user):
                     cur.execute(sqlInserLog,(player.name,'Rank',rankData.won-row[2],rankData.lost-row[3],rankData.kills-row[0],rankData.deaths-row[1]))
         
         ##製作訊息區塊
-        cur.execute(sqlQryData,(player.name,))
+        cur.execute(sqlQryData,(player.name,player.name))
         dataRows = cur.fetchall()
         embed = discord.Embed(title="近日戰績",colour=discord.Colour.orange())
         embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
