@@ -221,7 +221,7 @@ async def ranked(ctx,user):
 @bot.command()
 async def count(ctx,user):
     try:
-        conn = sql.connect(database="dafjeikpmmlbso", user="kzwxmrqfzvjiff", password="7833b1bd34bc84051542bfddc2638bf8581444943150a510a1ad74355860e4f1", host="ec2-174-129-238-192.compute-1.amazonaws.com", port="5432")
+        conn = sql.connect(os.environ['DATABASE_URL'],sslmode='require')
         cur = conn.cursor()
 
         player = await auth.get_player(user,r6.Platforms.UPLAY)
