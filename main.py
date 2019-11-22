@@ -278,8 +278,8 @@ async def count(ctx,user):
             else:
                 rankStr += bold("[")+"時間:"+bold(str(row[6])[:10]+"|")+"勝/負:"+bold(str(row[2])+"/"+str(row[3])+"|")+"殺/死:"+bold(str(row[4])+"/"+str(row[5])+"]")+newLine()
 
-        embed.add_field(name=bold("休閒"),value=casualStr)
-        embed.add_field(name=bold("排名"),value=rankStr)
+        embed.add_field(name=bold("休閒"),value=casualStr,inline=False)
+        embed.add_field(name=bold("排名"),value=rankStr,inline=False)
         await ctx.send(embed=embed)
         conn.commit()
         conn.close()
