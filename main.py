@@ -238,7 +238,7 @@ async def count(ctx,user):
         sqlInsertInfo = "INSERT INTO \"USER_INFO\" VALUES (%s,%s,%s,%s,%s,%s,%s)"
         sqlInserLog = "INSERT INTO \"GAME_LOG\" VALUES (%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP+ interval '8 hours')"
         sqlQryData = "(SELECT * FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Casual' ORDER BY \"QUERY_TIME\" DESC LIMIT 5) UNION ALL (SELECT * FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Rank' ORDER BY \"QUERY_TIME\" DESC LIMIT 5)"
-        
+        print(player.id)
         ##休閒戰績區塊
         cur.execute(sqlQryCasual,(player.id,))
         casualRows = cur.fetchall()
