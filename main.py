@@ -237,7 +237,7 @@ async def count(ctx,user):
         sqlQryRank = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Rank' LIMIT 1"
         sqlInsertInfo = "INSERT INTO \"USER_INFO\" VALUES (%s,%s,%s,%s,%s,%s,%s)"
         sqlInserLog = "INSERT INTO \"GAME_LOG\" VALUES (%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP+ interval '8 hours')"
-        sqlQryData = "(SELECT * FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Casual' ORDER BY \"QUERY_TIME\" DESC LIMIT 5) UNION ALL (SELECT * FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Rank' ORDER BY \"QUERY_TIME\" DESC LIMIT 5)"
+        sqlQryData = "(SELECT *,ROUND(\"KILL\"/\"DEATH\"::numeric,2) AS \"KD\" FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Casual' AND \"DEATH\" <> 0 ORDER BY \"QUERY_TIME\" DESC LIMIT 5) UNION ALL (SELECT *,ROUND(\"KILL\"/\"DEATH\"::numeric,2) AS \"KD\" FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Rank' AND \"DEATH\" <> 0 ORDER BY \"QUERY_TIME\" DESC LIMIT 5)"
         ##休閒戰績區塊
         cur.execute(sqlQryCasual,(player.id,))
         casualRows = cur.fetchall()
@@ -273,9 +273,9 @@ async def count(ctx,user):
         rankStr = ""
         for row in dataRows:
             if(row[1]=='Casual'):
-                casualStr += bold("[")+"時間:"+bold(str(row[6])[:10]+"|")+"勝/負:"+bold(str(row[2])+"/"+str(row[3])+"|")+"殺/死:"+bold(str(row[4])+"/"+str(row[5])+"]")+newLine()
+                casualStr += bold("[")+"時間:"+bold(str(row[6])[:10]+"|")+"勝/負:"+bold(str(row[2])+"/"+str(row[3])+"|")+"殺/死:"+bold(str(row[4])+"/"+str(row[5])+"]")+"K/D:"+bold(str(row[7]))+newLine()
             else:
-                rankStr += bold("[")+"時間:"+bold(str(row[6])[:10]+"|")+"勝/負:"+bold(str(row[2])+"/"+str(row[3])+"|")+"殺/死:"+bold(str(row[4])+"/"+str(row[5])+"]")+newLine()
+                rankStr += bold("[")+"時間:"+bold(str(row[6])[:10]+"|")+"勝/負:"+bold(str(row[2])+"/"+str(row[3])+"|")+"殺/死:"+bold(str(row[4])+"/"+str(row[5])+"]")+"K/D:"+bold(str(row[7]))+newLine()
 
         embed.add_field(name=bold("休閒"),value=casualStr,inline=False)
         embed.add_field(name=bold("排名"),value=rankStr,inline=False)
