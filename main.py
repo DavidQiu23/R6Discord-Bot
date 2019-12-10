@@ -224,7 +224,7 @@ async def ranked(ctx,user):
 async def count(ctx,user):
     adminFlag = True
     try:
-        admin.index(user.lower)
+        admin.index(user.lower())
     except:
         adminFlag = False
         await ctx.send("此功能尚未開放")
