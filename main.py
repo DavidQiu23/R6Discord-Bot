@@ -54,6 +54,8 @@ operatorImg ={
     "gridlock": "https://marcopixel.eu/r6-operatoricons/icons/png/gridlock.png"
 }
 
+admin= ["rush.your.b","xi习包子近平","b--------d33","yuki_o325","anime_dadaq","qo___________op"]
+
 auth = r6.Auth(os.getenv("R6-ACCOUNT",None), os.getenv("R6-PASSWORD",None))
 bot = commands.Bot(command_prefix='d.')
 bot.remove_command('help')
@@ -220,72 +222,79 @@ async def ranked(ctx,user):
 ##結算歷史戰績
 @bot.command()
 async def count(ctx,user):
+    adminFlag = True
     try:
-        conn = sql.connect(os.environ['DATABASE_URL'],sslmode='require')
-        cur = conn.cursor()
+        admin.index(user.lower)
+    except:
+        adminFlag = False
+        await ctx.send("此功能尚未開放")
+    if(adminFlag):
+        try:
+            conn = sql.connect(os.environ['DATABASE_URL'],sslmode='require')
+            cur = conn.cursor()
 
-        player = await auth.get_player(user,r6.Platforms.UPLAY)
-        await player.load_general()
-        await player.load_queues()
+            player = await auth.get_player(user,r6.Platforms.UPLAY)
+            await player.load_general()
+            await player.load_queues()
 
-        rankData = player.ranked
-        casualData = player.casual
+            rankData = player.ranked
+            casualData = player.casual
 
-        sqlUpdateCasual = "UPDATE \"USER_INFO\" SET \"USER_NAME\" = %s, \"KILL\" = %s, \"DEATH\" = %s, \"WIN\" = %s,\"LOSS\" = %s WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = %s"
-        sqlUpdateRank = "UPDATE \"USER_INFO\" SET \"USER_NAME\" = %s, \"KILL\" = %s, \"DEATH\" = %s, \"WIN\" = %s,\"LOSS\" = %s WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = %s"
-        sqlQryCasual = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Casual' LIMIT 1"
-        sqlQryRank = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Rank' LIMIT 1"
-        sqlInsertInfo = "INSERT INTO \"USER_INFO\" VALUES (%s,%s,%s,%s,%s,%s,%s)"
-        sqlInserLog = "INSERT INTO \"GAME_LOG\" VALUES (%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP+ interval '8 hours')"
-        sqlQryData = "(SELECT *,ROUND(\"KILL\"/\"DEATH\"::numeric,2) AS \"KD\" FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Casual' AND \"DEATH\" <> 0 ORDER BY \"QUERY_TIME\" DESC LIMIT 5) UNION ALL (SELECT *,ROUND(\"KILL\"/\"DEATH\"::numeric,2) AS \"KD\" FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Rank' AND \"DEATH\" <> 0 ORDER BY \"QUERY_TIME\" DESC LIMIT 5)"
-        ##休閒戰績區塊
-        cur.execute(sqlQryCasual,(player.id,))
-        casualRows = cur.fetchall()
-        if(len(casualRows)==0):
-            cur.execute(sqlInsertInfo,(player.id,player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
-            cur.execute(sqlInserLog,(player.id,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
-        else:
-            ##更新總戰績
-            cur.execute(sqlUpdateCasual,(player.name,casualData.kills,casualData.deaths,casualData.won,casualData.lost,player.id,'Casual'))
-            for row in casualRows:
-                if(row[0]!=casualData.kills or row[1]!=casualData.deaths):
-                    cur.execute(sqlInserLog,(player.id,'Casual',casualData.won-row[2],casualData.lost-row[3],casualData.kills-row[0],casualData.deaths-row[1]))
-
-        ##排名戰績區塊
-        cur.execute(sqlQryRank,(player.id,))
-        rankRows = cur.fetchall()
-        if(len(rankRows)==0):
-            cur.execute(sqlInsertInfo,(player.id,player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
-            cur.execute(sqlInserLog,(player.id,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
-        else:
-            ##更新總戰績
-            cur.execute(sqlUpdateRank,(player.name,rankData.kills,rankData.deaths,rankData.won,rankData.lost,player.id,'Rank'))
-            for row in rankRows:
-                if(row[0]!=rankData.kills or row[1]!=rankData.deaths):
-                    cur.execute(sqlInserLog,(player.id,'Rank',rankData.won-row[2],rankData.lost-row[3],rankData.kills-row[0],rankData.deaths-row[1]))
-        
-        ##製作訊息區塊
-        cur.execute(sqlQryData,(player.id,player.id))
-        dataRows = cur.fetchall()
-        embed = discord.Embed(title="近日戰績",colour=discord.Colour.orange())
-        embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
-        casualStr = ""
-        rankStr = ""
-        for row in dataRows:
-            if(row[1]=='Casual'):
-                casualStr += bold("[")+"時間:"+bold(str(row[6])[:10]+"|")+"勝/負:"+bold(str(row[2])+"/"+str(row[3])+"|")+"殺/死:"+bold(str(row[4])+"/"+str(row[5])+"|")+"K/D:"+bold(str(row[7])+"]")+newLine()
+            sqlUpdateCasual = "UPDATE \"USER_INFO\" SET \"USER_NAME\" = %s, \"KILL\" = %s, \"DEATH\" = %s, \"WIN\" = %s,\"LOSS\" = %s WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = %s"
+            sqlUpdateRank = "UPDATE \"USER_INFO\" SET \"USER_NAME\" = %s, \"KILL\" = %s, \"DEATH\" = %s, \"WIN\" = %s,\"LOSS\" = %s WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = %s"
+            sqlQryCasual = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Casual' LIMIT 1"
+            sqlQryRank = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Rank' LIMIT 1"
+            sqlInsertInfo = "INSERT INTO \"USER_INFO\" VALUES (%s,%s,%s,%s,%s,%s,%s)"
+            sqlInserLog = "INSERT INTO \"GAME_LOG\" VALUES (%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP+ interval '8 hours')"
+            sqlQryData = "(SELECT *,ROUND(\"KILL\"/\"DEATH\"::numeric,2) AS \"KD\" FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Casual' AND \"DEATH\" <> 0 ORDER BY \"QUERY_TIME\" DESC LIMIT 5) UNION ALL (SELECT *,ROUND(\"KILL\"/\"DEATH\"::numeric,2) AS \"KD\" FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Rank' AND \"DEATH\" <> 0 ORDER BY \"QUERY_TIME\" DESC LIMIT 5)"
+            ##休閒戰績區塊
+            cur.execute(sqlQryCasual,(player.id,))
+            casualRows = cur.fetchall()
+            if(len(casualRows)==0):
+                cur.execute(sqlInsertInfo,(player.id,player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
+                cur.execute(sqlInserLog,(player.id,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
             else:
-                rankStr += bold("[")+"時間:"+bold(str(row[6])[:10]+"|")+"勝/負:"+bold(str(row[2])+"/"+str(row[3])+"|")+"殺/死:"+bold(str(row[4])+"/"+str(row[5])+"|")+"K/D:"+bold(str(row[7])+"]")+newLine()
+                ##更新總戰績
+                cur.execute(sqlUpdateCasual,(player.name,casualData.kills,casualData.deaths,casualData.won,casualData.lost,player.id,'Casual'))
+                for row in casualRows:
+                    if(row[0]!=casualData.kills or row[1]!=casualData.deaths):
+                        cur.execute(sqlInserLog,(player.id,'Casual',casualData.won-row[2],casualData.lost-row[3],casualData.kills-row[0],casualData.deaths-row[1]))
 
-        embed.add_field(name=bold("休閒"),value=casualStr,inline=False)
-        embed.add_field(name=bold("排名"),value=rankStr,inline=False)
-        await ctx.send(embed=embed)
-        conn.commit()
-        conn.close()
+            ##排名戰績區塊
+            cur.execute(sqlQryRank,(player.id,))
+            rankRows = cur.fetchall()
+            if(len(rankRows)==0):
+                cur.execute(sqlInsertInfo,(player.id,player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
+                cur.execute(sqlInserLog,(player.id,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
+            else:
+                ##更新總戰績
+                cur.execute(sqlUpdateRank,(player.name,rankData.kills,rankData.deaths,rankData.won,rankData.lost,player.id,'Rank'))
+                for row in rankRows:
+                    if(row[0]!=rankData.kills or row[1]!=rankData.deaths):
+                        cur.execute(sqlInserLog,(player.id,'Rank',rankData.won-row[2],rankData.lost-row[3],rankData.kills-row[0],rankData.deaths-row[1]))
+            
+            ##製作訊息區塊
+            cur.execute(sqlQryData,(player.id,player.id))
+            dataRows = cur.fetchall()
+            embed = discord.Embed(title="近日戰績",colour=discord.Colour.orange())
+            embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
+            casualStr = ""
+            rankStr = ""
+            for row in dataRows:
+                if(row[1]=='Casual'):
+                    casualStr += bold("[")+"時間:"+bold(str(row[6])[:10]+"|")+"勝/負:"+bold(str(row[2])+"/"+str(row[3])+"|")+"殺/死:"+bold(str(row[4])+"/"+str(row[5])+"|")+"K/D:"+bold(str(row[7])+"]")+newLine()
+                else:
+                    rankStr += bold("[")+"時間:"+bold(str(row[6])[:10]+"|")+"勝/負:"+bold(str(row[2])+"/"+str(row[3])+"|")+"殺/死:"+bold(str(row[4])+"/"+str(row[5])+"|")+"K/D:"+bold(str(row[7])+"]")+newLine()
 
-    except Exception as error:
-        conn.close()
-        await ctx.send(error)
+            embed.add_field(name=bold("休閒"),value=casualStr,inline=False)
+            embed.add_field(name=bold("排名"),value=rankStr,inline=False)
+            await ctx.send(embed=embed)
+            conn.commit()
+            conn.close()
+
+        except Exception as error:
+            conn.close()
+            await ctx.send(error)
         
         
 ##自定義說明
@@ -296,7 +305,7 @@ async def help(ctx):
     embed.add_field(name= bold("d.vsoperator [user1] [user2] [operator]"),value= "比較各幹員資訊",inline=False)
     embed.add_field(name= bold("d.player [user]"),value="查詢玩家資訊",inline=False)
     embed.add_field(name= bold("d.ranked [user]"),value="查詢玩家排位",inline=False)
-    embed.add_field(name= bold("d.count [user]"),value="查詢玩家近況",inline=False)
+    embed.add_field(name= bold("d.count [user]"),value="查詢玩家近況(暫不開放)",inline=False)
     
     await ctx.send(embed=embed)
 
