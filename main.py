@@ -246,7 +246,7 @@ async def count(ctx,user):
             sqlQryRank = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Rank' LIMIT 1"
             sqlInsertInfo = "INSERT INTO \"USER_INFO\" VALUES (%s,%s,%s,%s,%s,%s,%s)"
             sqlInserLog = "INSERT INTO \"GAME_LOG\" VALUES (%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP+ interval '8 hours')"
-            sqlQryData = "(SELECT *,ROUND(\"KILL\"/\"DEATH\"::numeric,2) AS \"KD\" FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Casual' AND \"DEATH\" <> 0 ORDER BY \"QUERY_TIME\" DESC LIMIT 10) UNION ALL (SELECT *,ROUND(\"KILL\"/\"DEATH\"::numeric,2) AS \"KD\" FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Rank' AND \"DEATH\" <> 0 ORDER BY \"QUERY_TIME\" DESC LIMIT 10)"
+            sqlQryData = "(SELECT *,ROUND(\"KILL\"/\"DEATH\"::numeric,2) AS \"KD\" FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Casual' AND \"DEATH\" <> 0 ORDER BY \"QUERY_TIME\" DESC LIMIT 5) UNION ALL (SELECT *,ROUND(\"KILL\"/\"DEATH\"::numeric,2) AS \"KD\" FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Rank' AND \"DEATH\" <> 0 ORDER BY \"QUERY_TIME\" DESC LIMIT 5)"
             ##休閒戰績區塊
             cur.execute(sqlQryCasual,(player.id,))
             casualRows = cur.fetchall()
