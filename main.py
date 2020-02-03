@@ -57,6 +57,11 @@ operatorImg ={
 admin= ["rush.your.b","xi习包子近平","b--------d33","yuki_o325","anime_dadaq","qo___________op"]
 
 auth = r6.Auth(os.getenv("R6-ACCOUNT",None), os.getenv("R6-PASSWORD",None))
+auth.get("https://public-ubiservices.ubi.com/v2/profiles?nameOnPlatform=uplay&platformType=Anime_dadaQ")
+print(auth.key)
+print(auth.appid)
+print(auth.sessionid)
+
 bot = commands.Bot(command_prefix='d.')
 bot.remove_command('help')
 
@@ -171,12 +176,7 @@ async def vsoperator(ctx,user1,user2,operator):
 @bot.command()
 async def player(ctx,user):
     try:
-        print("get_player before")
-        print(auth.key)
-        print(auth.appid)
-        print(auth.sessionid)
         player = await auth.get_player(user,r6.Platforms.UPLAY)
-        print(player)
         await player.load_general()
         
         kd = str(round(player.kills/player.deaths,2))
