@@ -57,7 +57,7 @@ operatorImg ={
 admin= ["rush.your.b","xi习包子近平","b--------d33","yuki_o325","anime_dadaq","qo___________op"]
 
 auth = r6.Auth(os.getenv("R6-ACCOUNT",None), os.getenv("R6-PASSWORD",None))
-auth.get("https://public-ubiservices.ubi.com/v2/profiles?nameOnPlatform=uplay&platformType=Anime_dadaQ")
+print(auth.get("https://public-ubiservices.ubi.com/v2/profiles?nameOnPlatform=uplay&platformType=Anime_dadaQ"))
 print(auth.key)
 print(auth.appid)
 print(auth.sessionid)
