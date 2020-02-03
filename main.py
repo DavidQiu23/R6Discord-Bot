@@ -174,7 +174,9 @@ async def vsoperator(ctx,user1,user2,operator):
 @bot.command()
 async def player(ctx,user):
     try:
+        print("connect before")
         await auth.connect()
+        print("connect after")
         print(auth.key)
         print(auth.appid)
         print(auth.sessionid)
