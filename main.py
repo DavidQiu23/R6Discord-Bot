@@ -58,6 +58,7 @@ admin= ["rush.your.b","xi习包子近平","b--------d33","yuki_o325","anime_dada
 
 auth = r6.Auth(os.getenv("R6-ACCOUNT",None), os.getenv("R6-PASSWORD",None))
 
+
 bot = commands.Bot(command_prefix='d.')
 bot.remove_command('help')
 
