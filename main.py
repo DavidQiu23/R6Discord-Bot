@@ -172,6 +172,7 @@ async def vsoperator(ctx,user1,user2,operator):
 async def player(ctx,user):
     try:
         player = await auth.get_player(user,r6.Platforms.UPLAY)
+        print(player)
         await player.load_general()
         
         kd = str(round(player.kills/player.deaths,2))
