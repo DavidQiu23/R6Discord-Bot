@@ -57,7 +57,7 @@ operatorImg ={
 admin= ["rush.your.b","xi习包子近平","b--------d33","yuki_o325","anime_dadaq","qo___________op"]
 
 auth = r6.Auth(os.getenv("R6-ACCOUNT",None), os.getenv("R6-PASSWORD",None))
-auth.connect()
+await auth.connect()
 print(auth.key)
 print(auth.appid)
 print(auth.sessionid)
