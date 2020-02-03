@@ -57,10 +57,6 @@ operatorImg ={
 admin= ["rush.your.b","xi习包子近平","b--------d33","yuki_o325","anime_dadaq","qo___________op"]
 
 auth = r6.Auth(os.getenv("R6-ACCOUNT",None), os.getenv("R6-PASSWORD",None))
-auth.connect()
-print(auth.key)
-print(auth.appid)
-print(auth.sessionid)
 
 bot = commands.Bot(command_prefix='d.')
 bot.remove_command('help')
@@ -176,6 +172,10 @@ async def vsoperator(ctx,user1,user2,operator):
 @bot.command()
 async def player(ctx,user):
     try:
+        await auth.connect()
+        print(auth.key)
+        print(auth.appid)
+        print(auth.sessionid)
         player = await auth.get_player(user,r6.Platforms.UPLAY)
         await player.load_general()
         
