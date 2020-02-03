@@ -171,6 +171,7 @@ async def vsoperator(ctx,user1,user2,operator):
 @bot.command()
 async def player(ctx,user):
     try:
+        print("get_player before")
         player = await auth.get_player(user,r6.Platforms.UPLAY)
         print(player)
         await player.load_general()
