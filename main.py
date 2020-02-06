@@ -57,8 +57,6 @@ operatorImg ={
 admin= ["rush.your.b","xi习包子近平","b--------d33","yuki_o325","anime_dadaq","qo___________op"]
 
 auth = r6.Auth(os.getenv("R6-ACCOUNT",None), os.getenv("R6-PASSWORD",None))
-print(auth.token)
-print(auth.appid)
 
 bot = commands.Bot(command_prefix='d.')
 bot.remove_command('help')
@@ -174,12 +172,8 @@ async def vsoperator(ctx,user1,user2,operator):
 @bot.command()
 async def player(ctx,user):
     try:
-        print("connect before")
         await auth.connect()
-        print("connect after")
-        print(auth.key)
-        print(auth.appid)
-        print(auth.sessionid)
+
         player = await auth.get_player(user,r6.Platforms.UPLAY)
         await player.load_general()
         
@@ -232,11 +226,11 @@ async def ranked(ctx,user):
 @bot.command()
 async def count(ctx,user):
     adminFlag = True
-    try:
+    """try:
         admin.index(user.lower())
     except:
         adminFlag = False
-        await ctx.send("此功能尚未開放")
+        await ctx.send("此功能尚未開放")"""
     if(adminFlag):
         try:
             conn = sql.connect(os.environ['DATABASE_URL'],sslmode='require')
