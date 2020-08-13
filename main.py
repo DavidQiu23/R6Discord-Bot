@@ -228,8 +228,10 @@ async def rank(ctx,user):
     try:
         player = await auth.get_player(user,r6.Platforms.UPLAY)
 
-        data = player.load_rank(r6.RankedRegions.ASIA)
-        await ctx.send(data.next())
+        player.load_rank(r6.RankedRegions.ASIA)
+
+
+        await ctx.send(player.ranks)
     except Exception as error:
         await ctx.send(error)
 
