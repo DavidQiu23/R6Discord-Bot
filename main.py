@@ -222,6 +222,17 @@ async def ranked(ctx,user):
     except Exception as error:
         await ctx.send(error)
 
+##查詢玩家當季排位
+@bot.command()
+async def rank(ctx,user):
+    try:
+        player = await auth.get_player(user,r6.Platforms.UPLAY)
+
+        data = player.ranks
+        await ctx.send(data)
+    except Exception as error:
+        await ctx.send(error)
+
 ##結算歷史戰績
 @bot.command()
 async def count(ctx,user):
