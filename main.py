@@ -238,8 +238,8 @@ async def rank(ctx,user):
             embed = discord.Embed(colour=discord.Colour.gold())
             embed.set_thumbnail(url=data.get_icon_url())
             embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
-            embed.add_field(name=bold("RANK戰績"),value=bold("勝場:")+str(data.wins)+" | "+bold("敗場:")+str(data.losses)+newLine()+bold("勝率:")+win_ratio)
-            embed.add_field(name=bold("RANK分數資訊"),value=bold("當前積分:")+str(data.mmr)+newLine()+bold("當季最高積分:")+str(data.max_mmr)+newLine()+"還需"+bold(str(data.next_rank_mmr))+"分晉級")
+            embed.add_field(name=bold("戰績"),value=bold("勝場:")+str(data.wins)+" | "+bold("敗場:")+str(data.losses)+newLine()+bold("勝率:")+win_ratio)
+            embed.add_field(name=bold("分數資訊"),value=bold("當前積分:")+str(data.mmr)+newLine()+bold("當季最高積分:")+str(data.max_mmr)+newLine()+"還需"+bold(str(data.next_rank_mmr-data.mmr))+"分晉級")
             embed.set_footer(text="技術平均:"+str(data.skill_mean)+"/技術標準差:"+str(data.skill_stdev))
             await ctx.send(embed=embed)
     except Exception as error:
