@@ -231,9 +231,9 @@ async def rank(ctx,user):
         data = await player.get_rank(r6.RankedRegions.ASIA)
 
         if(data.wins == 0 and data.losses == 0):
-            await ctx.send("此玩家這季積分無資料")
+            await ctx.send("此玩家這季積分無資料"+str(data.wins)+str(data.losses))
         else:
-            win_ratio = str(round((data.won/(data.won+data.lost))*100,2))+"%"
+            win_ratio = str(round((data.wins/(data.wins+data.losses))*100,2))+"%"
 
             embed = discord.Embed(colour=discord.Colour.gold())
             embed.set_thumbnail(url=data.get_icon_url())
@@ -241,8 +241,7 @@ async def rank(ctx,user):
             embed.add_field(name=bold("RANK戰績"),value=bold("勝場:")+str(data.wins)+" | "+bold("敗場:")+str(data.losses)+newLine()+bold("勝率:")+win_ratio)
             embed.add_field(name=bold("RANK分數資訊"),value=bold("當前積分:")+str(data.mmr)+newLine()+bold("當季最高積分:")+str(data.max_mmr)+newLine()+"還需"+bold(str(data.next_rank_mmr))+"分晉級")
             embed.set_footer(text="技術平均:"+str(data.skill_mean)+"/技術標準差:"+str(data.skill_stdev))
-            
-        await ctx.send(embed)
+            await ctx.send(embed)
     except Exception as error:
         await ctx.send(error)
 
