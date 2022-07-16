@@ -2,7 +2,7 @@ import datetime
 import discord
 import r6sapi as r6
 import os
-import psycopg2 as sql
+#import psycopg2 as sql
 from discord.ext import commands
 
 operatorImg ={
@@ -56,7 +56,7 @@ operatorImg ={
 
 admin= ["rush.your.b","xi习包子近平","b--------d33","yuki_o325","anime_dadaq","qo___________op"]
 
-auth = r6.Auth(os.getenv("R6-ACCOUNT",None), os.getenv("R6-PASSWORD",None))
+auth = r6.Auth(os.getenv("R6_ACCOUNT",None), os.getenv("R6_PASSWORD",None))
 
 bot = commands.Bot(command_prefix='d.')
 bot.remove_command('help')
@@ -245,15 +245,15 @@ async def rank(ctx,user):
     except Exception as error:
         await ctx.send(error)
 
-##結算歷史戰績
+"""##結算歷史戰績
 @bot.command()
 async def count(ctx,user):
     adminFlag = True
-    """try:
+    try:
         admin.index(user.lower())
     except:
         adminFlag = False
-        await ctx.send("此功能尚未開放")"""
+        await ctx.send("此功能尚未開放")
     if(adminFlag):
         try:
             conn = sql.connect(os.environ['DATABASE_URL'],sslmode='require')
@@ -321,7 +321,7 @@ async def count(ctx,user):
         except Exception as error:
             conn.close()
             await ctx.send(error)
-        
+"""        
         
 ##自定義說明
 @bot.command()
@@ -330,7 +330,8 @@ async def help(ctx):
     embed.add_field(name= bold("d.operator [user] [operator]"),value= "查詢各幹員資訊",inline=False)
     embed.add_field(name= bold("d.vsoperator [user1] [user2] [operator]"),value= "比較各幹員資訊",inline=False)
     embed.add_field(name= bold("d.player [user]"),value="查詢玩家資訊",inline=False)
-    embed.add_field(name= bold("d.ranked [user]"),value="查詢玩家排位",inline=False)
+    embed.add_field(name= bold("d.ranked [user]"),value="查詢玩家排位資訊",inline=False)
+    embed.add_field(name= bold("d.rank [user]"),value="查詢玩家當季排位資訊",inline=False)
     embed.add_field(name= bold("d.count [user]"),value="查詢玩家近況(暫不開放)",inline=False)
     
     await ctx.send(embed=embed)
@@ -342,4 +343,4 @@ def bold(text):
 def newLine():
     return "\r\n"
     
-bot.run(os.getenv("DISCORD-KEY",None))
+bot.run(os.getenv("DISCORD_KEY",None))

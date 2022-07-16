@@ -22,7 +22,7 @@
     sudo python3 -m pip install -U discord.py
     sudo python3 -m pip install idna_ssl
     sudo python3 -m pip install typing_extensions
-***
+
 ### 2019/08/12更新
 部屬至Heroku
 ===========
@@ -30,6 +30,21 @@
 * 新增requirements.txt 內容放置需要的python套件
 * Heroku可設置環境變數 R6帳號密碼與Discord token移轉至Heroku環境變數
 * Deploy之後至Heroku->Resources 開啟Worker
+
+### 2022/07/17 Update
+Deploy to Raspberry pi 4
+===========
+* Stop using PostgreSQL and "count" function
+* Update "help" content
+Feature
+===========
+![help](./image/help.png)
+![count](./image/count.png)
+![operator](./image/operator.png)
+![player](./image/player.png)
+![rank](./image/rank.png)
+![ranked](./image/ranked.png)
+![vsopeartor](./image/vsopeartor.png)
 #### 參考
 * [discord.py](https://github.com/Rapptz/discord.py)    
 * [r6sapi](https://github.com/billy-yoyo/RainbowSixSiege-Python-API)
