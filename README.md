@@ -36,6 +36,7 @@ Deploy to Raspberry pi 4
 ===========
 * Stop using PostgreSQL and "count" function
 * Update "help" content
+
 Feature
 ===========
 ![help](./image/help.png)
