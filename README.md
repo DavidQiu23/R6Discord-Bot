@@ -39,13 +39,14 @@ Deploy to Raspberry pi 4
 
 Feature
 ===========
-![help](./image/help.png)
-![count](./image/count.png)
-![operator](./image/operator.png)
-![player](./image/player.png)
-![rank](./image/rank.png)
-![ranked](./image/ranked.png)
-![vsopeartor](./image/vsopeartor.png)
+<img src="./image/help.png" alt="help" width="700"/>
+<img src="./image/count.png" alt="count" width="700"/>
+<img src="./image/operator.png" alt="operator" width="700"/>
+<img src="./image/player.png" alt="player" width="700"/>
+<img src="./image/rank.png" alt="rank" width="700"/>
+<img src="./image/ranked.png" alt="ranked" width="700"/>
+<img src="./image/vsopeartor.png" alt="vsopeartor" width="700"/>
+
 #### 參考
 * [discord.py](https://github.com/Rapptz/discord.py)    
 * [r6sapi](https://github.com/billy-yoyo/RainbowSixSiege-Python-API)
