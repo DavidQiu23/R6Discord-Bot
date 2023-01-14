@@ -1,346 +1,215 @@
-import datetime
 import discord
-import r6sapi as r6
 import os
-#import psycopg2 as sql
+import logging
+import sqlite3
+from siegeapi import Auth
+from siegeapi.constants import seasons
+from siegeapi.summaries import Summary
+import datetime
 from discord.ext import commands
 
-operatorImg ={
-    "hibana": "https://thumbs.gfycat.com/SeveralLeafyBlesbok-small.gif",
-    "smoke": "https://i.pinimg.com/originals/50/8c/91/508c91273d9cadd223116f8fdab1d17a.gif",
-    "kapkan": "https://i.redd.it/vtvmde989y6y.gif",
-    "tachanka": "https://thumbs.gfycat.com/InnocentDesertedCrane-size_restricted.gif",
-    "thermite": "https://i.redd.it/i30e9mwwaj7y.gif",
-    "thatcher": "https://i.pinimg.com/originals/07/47/cd/0747cd5abe82df6e90eac9224892a6ba.gif",
-    "glaz": "https://i.redd.it/csh7pynckn7y.gif",
-    "bandit": "https://thumbs.gfycat.com/AdventurousSpiritedAfricanaugurbuzzard-size_restricted.gif",
-    "rook": "https://thumbs.gfycat.com/SpectacularUntidyAmericanbadger-size_restricted.gif",
-    "iq": "https://thumbs.gfycat.com/DirtyLinearHoverfly-size_restricted.gif",
-    "pulse": "https://thumbs.gfycat.com/CoordinatedAthleticIndianhare-size_restricted.gif",
-    "mute": "https://i.pinimg.com/originals/db/05/8b/db058bf3632a98dc3db2f2b929cf40e5.gif",
-    "valkyrie": "https://marcopixel.eu/r6-operatoricons/icons/png/valkyrie.png",
-    "frost": "https://thumbs.gfycat.com/LongIllinformedBlacklemur-size_restricted.gif",
-    "doc": "https://thumbs.gfycat.com/RashLegalIbadanmalimbe-max-1mb.gif",
-    "sledge": "https://i.imgur.com/9ItT0aQ.gifv",
-    "jager": "https://thumbs.gfycat.com/DifficultPotableIberianmidwifetoad-size_restricted.gif",
-    "blackbeard": "https://thumbs.gfycat.com/AffectionateSourBlackandtancoonhound-max-1mb.gif",
-    "fuze": "https://thumbs.gfycat.com/BeautifulCautiousAfricanelephant-size_restricted.gif",
-    "echo": "http://pa1.narvii.com/6935/8f669bc13357207e3b27ab62fe1cb4caec522a12r1-482-538_00.gif",
-    "caveira": "https://i.pinimg.com/originals/5a/a3/37/5aa3378906542849876688d2ad23571e.gif",
-    "blitz": "https://thumbs.gfycat.com/MasculinePerkyBufflehead-small.gif",
-    "montagne": "https://thumbs.gfycat.com/SoggyBraveFly-small.gif",
-    "ash": "https://i.pinimg.com/originals/2f/17/12/2f1712fb7da4654b4de29132c6cf702c.gif",
-    "twitch": "https://marcopixel.eu/r6-operatoricons/icons/png/twitch.png",
-    "castle": "https://i.redd.it/yx9glfk1ls7y.gif",
-    "buck": "https://marcopixel.eu/r6-operatoricons/icons/png/buck.png",
-    "capitao": "https://thumbs.gfycat.com/InconsequentialEmotionalHind-size_restricted.gif",
-    "jackal": "https://thumbs.gfycat.com/GreenLimpingInexpectatumpleco-max-1mb.gif",
-    "mira": "https://i.imgur.com/ztYA0kP.gif",
-    "ela": "https://thumbs.gfycat.com/LiveWarpedGharial-size_restricted.gif",
-    "lesion": "https://thumbs.gfycat.com/MiniatureUnfortunateIrrawaddydolphin-size_restricted.gif",
-    "ying": "https://marcopixel.eu/r6-operatoricons/icons/png/ying.png",
-    "dokkaebi": "https://i.redd.it/a6zjy16cr2701.gif",
-    "vigil": "https://i.redd.it/syrlum4so9j01.gif",
-    "zofia": "https://thumbs.gfycat.com/UnhappyPerfumedJumpingbean-max-1mb.gif",
-    "alibi": "https://marcopixel.eu/r6-operatoricons/icons/png/alibi.png",
-    "maestro":"https://marcopixel.eu/r6-operatoricons/icons/png/maestro.png",
-    "clash": "https://marcopixel.eu/r6-operatoricons/icons/png/clash.png",
-    "kaid" : "https://marcopixel.eu/r6-operatoricons/icons/png/kaid.png",
-    "mozzie": "https://marcopixel.eu/r6-operatoricons/icons/png/mozzie.png",
-    "lion": "https://i.pinimg.com/originals/67/80/a9/6780a9553bc83816dfa92a947d73abec.gif",
-    "finka": "https://marcopixel.eu/r6-operatoricons/icons/png/finka.png",
-    "maverick": "https://marcopixel.eu/r6-operatoricons/icons/png/maverick.png",
-    "nomad": "https://marcopixel.eu/r6-operatoricons/icons/png/nomad.png",
-    "gridlock": "https://marcopixel.eu/r6-operatoricons/icons/png/gridlock.png"
-}
+auth:Auth ##R6身份 要使用這個取得任何遊戲資料
 
-admin= ["rush.your.b","xi习包子近平","b--------d33","yuki_o325","anime_dadaq","qo___________op"]
+##需要允許message_content意圖,不然機器人收不到訊息
+intents = discord.Intents.default()
+intents.message_content = True
 
-auth = r6.Auth(os.getenv("R6_ACCOUNT",None), os.getenv("R6_PASSWORD",None))
-
-bot = commands.Bot(command_prefix='d.')
-bot.remove_command('help')
+bot = commands.Bot(command_prefix='d.',intents=intents,help_command=None)
 
 ##機器人啟動完成
 @bot.event
 async def on_ready():
-    game = discord.Game("d.help")
-    await bot.change_presence(activity=game)
+    global auth
+    auth = Auth(os.getenv("R6_ACCOUNT",None), os.getenv("R6_PASSWORD",None))
+    await bot.change_presence(activity=discord.Game("d.help"))
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-
+    
 ##幹員資訊
 @bot.command()
-async def operator(ctx,user,operator):
+async def operator(ctx,user,operatorName):
     try:
-        operator = operator.lower()
-        player = await auth.get_player(user, r6.Platforms.UPLAY)
+        # 讀取角色資料與幹員資料
+        player = await auth.get_player(name=user)
+        await player.load_operators(True)
         
-        data = await player.load_operator(operator)
+        # 尋找使用者所輸入的幹員資料
+        operatorData = findOperators(player.operators,operatorName)
         
-        imgUrl = operatorImg[operator]
-        
-        if(data.wins == 0 and data.losses == 0):
-            await ctx.send("此角色無資料可顯示")
+        if(operatorData):
+            if(operatorData.rounds_won == 0 and operatorData.rounds_lost == 0):
+                await ctx.send("此角色無資料可顯示")
+            else:
+                embed = discord.Embed(title=operatorData.name+"最近表現",colour=discord.Colour.teal())
+                embed.set_author(name=player.name, icon_url=player.profile_pic_url)
+                embed.set_thumbnail(url=operatorData.icon_url)
+                embed.add_field(name="**勝負**", value=f"{operatorData.rounds_won}/{operatorData.rounds_lost}({operatorData.win_loss_ratio})")
+                embed.add_field(name="**戰損**", value=f"{operatorData.kills}/{operatorData.death}({operatorData.kill_death_ratio})")
+                
+                await ctx.send(embed=embed)
         else:
-            win_ratio = str(round((data.wins/(data.wins+data.losses))*100,2))+"%"
-            kd = str(round(data.kills/data.deaths,2))
-            time = str(datetime.timedelta(seconds=data.time_played))
+            raise Exception(f"找不到{operatorName}幹員資料")
+            
+    except Exception as error:
+        logging.exception(error)
+        if(str(error) == "No results"):
+            await ctx.send(f"找不到{user}資料")
+        else:
+            await ctx.send(error)
         
-        
-        embed = discord.Embed(title=data.name.upper()+"資訊",colour=discord.Colour.teal())
-        embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
-        embed.set_thumbnail(url=imgUrl)
-        embed.add_field(name=bold("勝/敗"), value=bold(str(data.wins))+"/"+bold(str(data.losses))+" | "+bold(win_ratio))
-        embed.add_field(name=bold("殺/死"), value=bold(str(data.kills))+"/"+bold(str(data.deaths))+" | "+bold(kd), inline=True)
-        embed.add_field(name=bold("爆頭"), value=bold(str(data.headshots)))
-        embed.add_field(name=bold("近戰"), value=bold(str(data.melees)), inline=True)
-        embed.add_field(name=bold("被拉起"), value=bold(str(data.dbnos)))
-        embed.add_field(name=bold(data.statistic_name), value=bold(str(data.statistic)), inline=True)
-        embed.add_field(name=bold("經驗值"),value=bold(str(data.xp)))
-        embed.add_field(name=bold("遊玩時間"),value=bold(time))
+##幹員比較
+@bot.command()
+async def vsoperator(ctx,user1,user2,operatorName):
+    try:
+        playerDict = await auth.get_player_batch(names = [user1,user2])
+
+        playerName = [] # 儲存實際遊戲名子當後面字典物件的key
+        playerID = [] # 儲存id 因作者誤把使用name查找的playerDict字典key設定成id 所以這邊要先存起來給後面用
+        operatorDict = {}
+        for key,player in  playerDict.items():
+            await player.load_operators(True)
+            operatorDict[player.name] = findOperators(player.operators,operatorName)
+
+            if(operatorDict[player.name] is None):
+                raise Exception(f"找不到{operatorName}幹員資料")
+
+            playerName.append(player.name)
+            playerID.append(key)
+
+        if(operatorDict[playerName[0]].rounds_won == 0 and operatorDict[playerName[0]].rounds_lost == 0):
+            raise Exception(f"用戶1{operatorDict[playerName[0]].name}無資料無法比較")
+
+        if(operatorDict[playerName[1]].rounds_won == 0 and operatorDict[playerName[1]].rounds_lost == 0):
+            raise Exception("用戶2{operatorData2.name}無資料無法比較")
+
+        embed = discord.Embed(title=f"{playerDict[playerID[0]].name} vs {playerDict[playerID[1]].name}",description=f"{operatorDict[playerName[0]].name}比較",colour=discord.Colour.green())
+        embed.set_thumbnail(url=operatorDict[playerName[0]].icon_url)
+        embed.add_field(name="**勝負**", 
+            value=f"**{playerDict[playerID[0]].name}**: {operatorDict[playerName[0]].rounds_won}/{operatorDict[playerName[0]].rounds_lost} ({operatorDict[playerName[0]].win_loss_ratio})\r\n"
+                f"**{playerDict[playerID[1]].name}**: {operatorDict[playerName[1]].rounds_won}/{operatorDict[playerName[1]].rounds_lost} ({operatorDict[playerName[1]].win_loss_ratio})")
+        embed.add_field(name="**戰損**", 
+            value=f"**{playerDict[playerID[0]].name}**: {operatorDict[playerName[0]].kills}/{operatorDict[playerName[0]].death} ({operatorDict[playerName[0]].kill_death_ratio})\r\n"
+                f"**{playerDict[playerID[1]].name}**: {operatorDict[playerName[1]].kills}/{operatorDict[playerName[1]].death} ({operatorDict[playerName[1]].kill_death_ratio})")
         
         await ctx.send(embed=embed)
     except Exception as error:
-        if(str(error) == "No results"):
-            await ctx.send("找不到用戶，請檢查用戶名是否正確")
-        elif(len(str(error))>16):
-            if(str(error)[0:16] == "invalid operator"):
-                await ctx.send("找不到幹員，請檢查幹員名稱是否正確")
-        else:
-            await ctx.send(error)
-    
-##幹員比較
-@bot.command()
-async def vsoperator(ctx,user1,user2,operator):
-    errorFlag = False
-    operator = operator.lower()
-    try:
-        player1 = await auth.get_player(user1, r6.Platforms.UPLAY)
-    except Exception as error:
-        errorFlag = True
-        await ctx.send("找不到用戶1，請檢查用戶名是否正確")
-    try:
-        player2 = await auth.get_player(user2, r6.Platforms.UPLAY)
-    except Exception as error:
-        errorFlag = True
-        await ctx.send("找不到用戶2，請檢查用戶名是否正確")
-    try:
-        data1 = await player1.load_operator(operator)
-        data2 = await player2.load_operator(operator)
-    except Exception as error:
-        errorFlag = True
-        await ctx.send("找不到幹員，請檢查幹員名稱是否正確")
-    
-    if(not errorFlag):
-    
-        imgUrl = operatorImg[operator]    
+        logging.exception(error)
+        await ctx.send(repr(error))
         
-        if(data1.wins == 0 and data1.losses == 0):
-            errorFlag = True
-            await ctx.send("用戶1此角色無資料無法比較")
-        else:
-            win_ratio1 = str(round((data1.wins/(data1.wins+data1.losses))*100,2))+"%"
-            kd1 = str(round(data1.kills/data1.deaths,2))
-            time1 = str(datetime.timedelta(seconds=data1.time_played))
-        
-        if(data2.wins == 0 and data2.losses == 0):
-            errorFlag = True
-            await ctx.send("用戶2此角色無資料無法比較")
-        else:
-            win_ratio2 = str(round((data2.wins/(data2.wins+data2.losses))*100,2))+"%"
-            kd2 = str(round(data2.kills/data2.deaths,2))
-            time2 = str(datetime.timedelta(seconds=data2.time_played))
-        
-        if(not errorFlag):
-            embed = discord.Embed(title=player1.name+" vs "+player2.name,description=operator.upper()+"比較",colour=discord.Colour.green())
-            embed.set_thumbnail(url=imgUrl)
-            embed.add_field(name=bold("勝/敗"), value=bold(player1.name+": ")+str(data1.wins)+"/"+str(data1.losses)+"  |  "+win_ratio1+newLine()+bold(player2.name+": ")+str(data2.wins)+"/"+str(data2.losses)+"  |  "+win_ratio2)
-            embed.add_field(name=bold("殺/死"), value=bold(player1.name+": ")+str(data1.kills)+"/"+str(data1.deaths)+"  |  "+kd1+newLine()+bold(player2.name+": ")+str(data2.kills)+"/"+str(data2.deaths)+"  |  "+kd2, inline=True)
-            embed.add_field(name=bold("爆頭"), value=bold(player1.name+": ")+str(data1.headshots)+newLine()+bold(player2.name+": ")+str(data2.headshots))
-            embed.add_field(name=bold("近戰"), value=bold(player1.name+": ")+str(data1.melees)+newLine()+bold(player2.name+": ")+str(data2.melees), inline=True)
-            embed.add_field(name=bold("被拉起"), value=bold(player1.name+": ")+str(data1.dbnos)+newLine()+bold(player2.name+":")+str(data2.dbnos))
-            embed.add_field(name=bold(data1.statistic_name), value=bold(player1.name+": ")+str(data1.statistic)+newLine()+bold(player2.name+": ")+str(data2.statistic), inline=True)
-            embed.add_field(name=bold("經驗值"),value=bold(player1.name+": ")+str(data1.xp)+newLine()+bold(player2.name+": ")+str(data2.xp))
-            embed.add_field(name=bold("遊玩時間"),value=bold(player1.name+": ")+time1+newLine()+bold(player2.name+": ")+time2)
-            
-            await ctx.send(embed=embed)
-    
 ##玩家資訊
 @bot.command()
 async def player(ctx,user):
     try:
-        await auth.connect()
+        player = await auth.get_player(name=user)
 
-        player = await auth.get_player(user,r6.Platforms.UPLAY)
-        await player.load_general()
+        summary = await getPlayerSummary(player)
+
+        summaryKd = round(summary.kills/summary.death,2)
+        rankKd = round(player.ranked_profile.kills/player.ranked_profile.deaths,2)
+        summaryWinRatio = round(summary.matches_won/summary.matches_lost,2)
+        rankWinRatio = round(player.ranked_profile.wins/player.ranked_profile.losses,2)
+        time = datetime.timedelta(minutes=summary.minutes_played)
         
-        kd = str(round(player.kills/player.deaths,2))
-        headshot_ratio = str(round((player.headshots/player.bullets_hit)*100,2))+"%"
-        win_ratio = str(round((player.matches_won/player.matches_played)*100,2))+"%"
-        time = str(datetime.timedelta(seconds=player.time_played))
-        
-        embed = discord.Embed(colour=discord.Colour.blue())
-        embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
-        embed.add_field(name=bold("擊殺資訊"),value=bold("擊殺:")+str(player.kills)+" | "+bold("死亡:")+str(player.deaths)+" | "+bold("KD:")+kd+newLine()+bold("近戰:")+str(player.melee_kills)+" | "+bold("穿透擊殺:")+str(player.penetration_kills)+newLine()+bold("自殺:")+str(player.suicides)+" | "+bold("盲殺:")+str(player.blind_kills),inline=False)
-        embed.add_field(name=bold("射擊資訊"),value=bold("擊中:")+str(player.bullets_hit)+" | "+bold("爆頭:")+str(player.headshots)+newLine()+bold("爆頭率:")+headshot_ratio,inline=False)
-        embed.add_field(name=bold("場次資訊"),value=bold("勝場:")+str(player.matches_won)+" | "+bold("敗場:")+str(player.matches_lost)+newLine()+bold("總場數:")+str(player.matches_played)+" | "+bold("勝率:")+win_ratio,inline=False)
-        embed.add_field(name=bold("團隊貢獻"),value=bold("助攻:")+str(player.kill_assists)+" | "+bold("擊倒:")+str(player.dbnos)+newLine()+bold("協助擊倒:")+str(player.dbno_assists)+" | "+bold("破壞:")+str(player.gadgets_destroyed)+newLine()+bold("拉起:")+str(player.revives)+" | "+bold("拉起失敗:")+str(player.revives_denied),inline=False)
-        embed.add_field(name=bold("遊玩資訊"),value=bold("經驗值:")+str(player.total_xp)+" | "+bold("時數:")+time,inline=False)
+        embed = discord.Embed(colour=discord.Colour.blue(),description=f"遊玩時數：{time}")
+        embed.set_author(name=f"<{player.level}>{player.name}", icon_url=player.profile_pic_url)
+        embed.add_field(name="**概覽**",value=f"勝負:{summary.rounds_won}/{summary.rounds_lost}({summaryKd})\r\n"
+            f"戰損:{summary.kills}/{summary.death}({summaryWinRatio})")
+        embed.add_field(name=f"**排位 {player.ranked_profile.season_code} {player.ranked_profile.rank} {player.ranked_profile.rank_points}**",
+            value=f"勝負:{player.ranked_profile.wins}/{player.ranked_profile.losses}({rankWinRatio})\r\n"
+                f"戰損:{player.ranked_profile.kills}/{player.ranked_profile.deaths}({rankKd})")
         
         await ctx.send(embed=embed)
     except Exception as error:
-        #await ctx.send("找不到用戶，請檢查用戶名是否正確")
+        logging.exception(error)
         await ctx.send(error)
 
-##查詢玩家排位
-@bot.command()
-async def ranked(ctx,user):
-    try:
-        player = await auth.get_player(user,r6.Platforms.UPLAY)
-        await player.load_general()
-        await player.load_queues()
-        
-        data = player.ranked
-        
-        if(data.won == 0 and data.lost == 0):
-            await ctx.send("此玩家無RANK資料")
-        else:
-            win_ratio = str(round((data.won/(data.won+data.lost))*100,2))+"%"
-            kd = str(round(data.kills/data.deaths,2))
-            time = str(datetime.timedelta(seconds=data.time_played))
-            
-            embed = discord.Embed(colour=discord.Colour.red())
-            embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
-            embed.add_field(name=bold("遊玩資訊"),value=bold("勝場:")+str(data.won)+" | "+bold("敗場:")+str(data.lost)+newLine()+bold("場數:")+str(data.played)+newLine()+bold("勝率:")+win_ratio+newLine()+bold("遊玩時間:")+time)
-            embed.add_field(name=bold("擊殺資訊"),value=bold("擊殺:")+str(data.kills)+" | "+bold("死亡:")+str(data.deaths)+newLine()+bold("KD:")+kd)
-            
-            await ctx.send(embed=embed)
-        
-    except Exception as error:
-        await ctx.send(error)
 
-##查詢玩家當季排位
-@bot.command()
-async def rank(ctx,user):
-    try:
-        player = await auth.get_player(user,r6.Platforms.UPLAY)
-
-        data = await player.get_rank(r6.RankedRegions.ASIA)
-
-        if(data.wins == 0 and data.losses == 0):
-            await ctx.send("此玩家這季積分無資料"+str(data.wins)+str(data.losses))
-        else:
-            win_ratio = str(round((data.wins/(data.wins+data.losses))*100,2))+"%"
-
-            embed = discord.Embed(colour=discord.Colour.gold())
-            embed.set_thumbnail(url=data.get_icon_url())
-            embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
-            embed.add_field(name=bold("戰績"),value=bold("勝場:")+str(data.wins)+" | "+bold("敗場:")+str(data.losses)+newLine()+bold("勝率:")+win_ratio)
-            embed.add_field(name=bold("分數資訊"),value=bold("當前積分:")+str(data.mmr)+newLine()+bold("當季最高積分:")+str(data.max_mmr)+newLine()+"還需"+bold(str(data.next_rank_mmr-data.mmr))+"分晉級")
-            embed.set_footer(text="技術平均:"+str(data.skill_mean)+"/技術標準差:"+str(data.skill_stdev))
-            await ctx.send(embed=embed)
-    except Exception as error:
-        await ctx.send(error)
-
-"""##結算歷史戰績
+##結算歷史戰績
 @bot.command()
 async def count(ctx,user):
-    adminFlag = True
     try:
-        admin.index(user.lower())
-    except:
-        adminFlag = False
-        await ctx.send("此功能尚未開放")
-    if(adminFlag):
-        try:
-            conn = sql.connect(os.environ['DATABASE_URL'],sslmode='require')
-            cur = conn.cursor()
+        """
+        先query資料庫這個使用者的最新資料->撈r6使用者資料->兩個互減->(勝負等於零)?不寫入資料庫:insert回資料庫->判斷個人資料超過10筆刪除舊資料
+        """
+        player = await auth.get_player(name=user)
+        summary = await getPlayerSummary(player)
+        
+        con = sqlite3.connect("r6.db")
+        cur = con.cursor()
 
-            player = await auth.get_player(user,r6.Platforms.UPLAY)
-            await player.load_general()
-            await player.load_queues()
+        originData = cur.execute("SELECT WINS,LOSSES,KILLS,DEATHS FROM USER_INFO WHERE USER_ID=? AND TIME = (SELECT MAX(TIME) FROM USER_INFO WHERE USER_ID=? GROUP BY TIME)",(player.id,player.id,)).fetchone()
 
-            rankData = player.ranked
-            casualData = player.casual
+        if(originData is None):
+            winsDiff = summary.matches_won
+            lossesDiff = summary.matches_lost
+            killsDiff = summary.kills
+            deathsDiff = summary.death
+        else:
+            winsDiff = summary.matches_won - originData[0]
+            lossesDiff = summary.matches_lost - originData[1]
+            killsDiff = summary.kills - originData[2]
+            deathsDiff = summary.death - originData[3]
 
-            sqlUpdateCasual = "UPDATE \"USER_INFO\" SET \"USER_NAME\" = %s, \"KILL\" = %s, \"DEATH\" = %s, \"WIN\" = %s,\"LOSS\" = %s WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = %s"
-            sqlUpdateRank = "UPDATE \"USER_INFO\" SET \"USER_NAME\" = %s, \"KILL\" = %s, \"DEATH\" = %s, \"WIN\" = %s,\"LOSS\" = %s WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = %s"
-            sqlQryCasual = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Casual' LIMIT 1"
-            sqlQryRank = "SELECT \"KILL\",\"DEATH\",\"WIN\",\"LOSS\" FROM \"USER_INFO\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Rank' LIMIT 1"
-            sqlInsertInfo = "INSERT INTO \"USER_INFO\" VALUES (%s,%s,%s,%s,%s,%s,%s)"
-            sqlInserLog = "INSERT INTO \"GAME_LOG\" VALUES (%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP+ interval '8 hours')"
-            sqlQryData = "(SELECT *,ROUND(\"KILL\"/\"DEATH\"::numeric,2) AS \"KD\" FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Casual' AND \"DEATH\" <> 0 ORDER BY \"QUERY_TIME\" DESC LIMIT 5) UNION ALL (SELECT *,ROUND(\"KILL\"/\"DEATH\"::numeric,2) AS \"KD\" FROM \"GAME_LOG\" WHERE \"USER_ID\" LIKE %s AND \"GAME_MODE\" = 'Rank' AND \"DEATH\" <> 0 ORDER BY \"QUERY_TIME\" DESC LIMIT 5)"
-            ##休閒戰績區塊
-            cur.execute(sqlQryCasual,(player.id,))
-            casualRows = cur.fetchall()
-            if(len(casualRows)==0):
-                cur.execute(sqlInsertInfo,(player.id,player.name,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
-                cur.execute(sqlInserLog,(player.id,'Casual',casualData.won,casualData.lost,casualData.kills,casualData.deaths))
-            else:
-                ##更新總戰績
-                cur.execute(sqlUpdateCasual,(player.name,casualData.kills,casualData.deaths,casualData.won,casualData.lost,player.id,'Casual'))
-                for row in casualRows:
-                    if(row[0]!=casualData.kills or row[1]!=casualData.deaths):
-                        cur.execute(sqlInserLog,(player.id,'Casual',casualData.won-row[2],casualData.lost-row[3],casualData.kills-row[0],casualData.deaths-row[1]))
+        if(winsDiff != 0 or lossesDiff != 0):
+            cur.execute("INSERT INTO USER_INFO VALUES(?,?,?,?,?,?,?,?,?,?,DATE())"
+                ,(player.id,player.name,summary.matches_won,summary.matches_lost,summary.kills,summary.death,winsDiff,lossesDiff,killsDiff,deathsDiff))
+            con.commit()
+        
+        contentData = cur.execute("SELECT TIME,WINS_DIFF,LOSSES_DIFF,KILLS_DIFF,DEATHS_DIFF FROM USER_INFO WHERE USER_ID=? ORDER BY TIME DESC",(player.id,)).fetchall()
+        content = ""
+        for row in contentData:
+            content += f"**[{row[0]}]**\r\n勝負:{row[1]}/{row[2]}({round(row[1]/row[2],2)}) | 戰損:{row[3]}/{row[4]}({round(row[3]/row[4],2)})"
 
-            ##排名戰績區塊
-            cur.execute(sqlQryRank,(player.id,))
-            rankRows = cur.fetchall()
-            if(len(rankRows)==0):
-                cur.execute(sqlInsertInfo,(player.id,player.name,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
-                cur.execute(sqlInserLog,(player.id,'Rank',rankData.won,rankData.lost,rankData.kills,rankData.deaths))
-            else:
-                ##更新總戰績
-                cur.execute(sqlUpdateRank,(player.name,rankData.kills,rankData.deaths,rankData.won,rankData.lost,player.id,'Rank'))
-                for row in rankRows:
-                    if(row[0]!=rankData.kills or row[1]!=rankData.deaths):
-                        cur.execute(sqlInserLog,(player.id,'Rank',rankData.won-row[2],rankData.lost-row[3],rankData.kills-row[0],rankData.deaths-row[1]))
-            
-            ##製作訊息區塊
-            cur.execute(sqlQryData,(player.id,player.id))
-            dataRows = cur.fetchall()
-            embed = discord.Embed(title="近日戰績",colour=discord.Colour.orange())
-            embed.set_author(name=player.name, url=player.url, icon_url=player.icon_url)
-            casualStr = ""
-            rankStr = ""
-            for row in dataRows:
-                if(row[1]=='Casual'):
-                    casualStr += bold("[")+"時間:"+bold(str(row[6])[:10]+"|")+"勝/負:"+bold(str(row[2])+"/"+str(row[3])+"|")+"殺/死:"+bold(str(row[4])+"/"+str(row[5])+"|")+"K/D:"+bold(str(row[7])+"]")+newLine()
-                else:
-                    rankStr += bold("[")+"時間:"+bold(str(row[6])[:10]+"|")+"勝/負:"+bold(str(row[2])+"/"+str(row[3])+"|")+"殺/死:"+bold(str(row[4])+"/"+str(row[5])+"|")+"K/D:"+bold(str(row[7])+"]")+newLine()
+        if(len(contentData)>10):
+            cur.execute("DELETE FROM USER_INFO WHERE USER_ID=? AND TIME = (SELECT MIN(TIME) FROM USER_INFO WHERE USER_ID=? GROUP BY TIME)",(player.id,player.id,))
+            con.commit()
 
-            embed.add_field(name=bold("休閒"),value=casualStr,inline=False)
-            embed.add_field(name=bold("排名"),value=rankStr,inline=False)
-            await ctx.send(embed=embed)
-            conn.commit()
-            conn.close()
-
-        except Exception as error:
-            conn.close()
-            await ctx.send(error)
-"""        
+        embed = discord.Embed(colour=discord.Colour.orange())
+        embed.set_author(name=player.name, icon_url=player.profile_pic_url)
+        embed.add_field(name="**近日戰績**",value=content)
+        await ctx.send(embed=embed)
+    except Exception as error:
+        logging.exception(error)
+        await ctx.send(error)  
+    finally:
+        con.close()      
         
 ##自定義說明
 @bot.command()
 async def help(ctx):
     embed = discord.Embed(title="指令說明",description="[]為必要參數",colour=discord.Colour.gold())
-    embed.add_field(name= bold("d.operator [user] [operator]"),value= "查詢各幹員資訊",inline=False)
-    embed.add_field(name= bold("d.vsoperator [user1] [user2] [operator]"),value= "比較各幹員資訊",inline=False)
-    embed.add_field(name= bold("d.player [user]"),value="查詢玩家資訊",inline=False)
-    embed.add_field(name= bold("d.ranked [user]"),value="查詢玩家排位資訊",inline=False)
-    embed.add_field(name= bold("d.rank [user]"),value="查詢玩家當季排位資訊",inline=False)
-    embed.add_field(name= bold("d.count [user]"),value="查詢玩家近況(暫不開放)",inline=False)
+    embed.add_field(name= "**d.operator [user] [operator]**",value= "查詢各幹員資訊",inline=False)
+    embed.add_field(name= "**d.vsoperator [user1] [user2] [operator]**",value= "比較各幹員資訊",inline=False)
+    embed.add_field(name= "**d.player [user]**",value="查詢玩家資訊",inline=False)
+    embed.add_field(name= "**d.count [user]**",value="查詢玩家近況",inline=False)
     
     await ctx.send(embed=embed)
 
-##粗體字
-def bold(text):
-    return "**"+str(text)+"**"
-##換行
-def newLine():
-    return "\r\n"
+async def getPlayerSummary(player):
+    seasonCodeList = [] #所有賽季代號
+    for value in seasons.values():
+        seasonCodeList.append(value["code"])
     
+    await player.load_summaries(gamemodes=["all"],team_roles=["all"],seasons=seasonCodeList)
+    await player.load_ranked_v2()
+    await player.load_playtime()
+
+    # 所有賽季資料加總
+    summary = None # 個人概要
+    for season in player.all_summary.values():
+        if(summary is None):
+            summary = season["all"]
+        else:
+            for k,v in season["all"].__dict__.items():
+                setattr(summary,k,getattr(summary,k)+v)
+    return summary
+
+def findOperators(operators,operatorName):
+    operatorList = operators.all.attacker + operators.all.defender
+    for operatorItem in operatorList:
+        if(operatorItem.name.lower()==operatorName.lower()):
+            return operatorItem
+
 bot.run(os.getenv("DISCORD_KEY",None))
