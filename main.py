@@ -45,7 +45,7 @@ async def operator(ctx,user,operatorName):
                 embed = discord.Embed(title=operatorData.name+"最近表現",colour=discord.Colour.teal())
                 embed.set_author(name=player.name, icon_url=player.profile_pic_url)
                 embed.set_thumbnail(url=operatorData.icon_url)
-                embed.add_field(name="**勝負**", value=f"{operatorData.rounds_won}/{operatorData.rounds_lost}({round(operatorData.win_loss_ratio/100.2)})")
+                embed.add_field(name="**勝負**", value=f"{operatorData.rounds_won}/{operatorData.rounds_lost}({round(operatorData.win_loss_ratio/100,2)})")
                 embed.add_field(name="**戰損**", value=f"{operatorData.kills}/{operatorData.death}({round(operatorData.kill_death_ratio/100,2)})")
                 
                 await ctx.send(embed=embed)
