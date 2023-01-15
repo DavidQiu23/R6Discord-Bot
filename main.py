@@ -45,8 +45,8 @@ async def operator(ctx,user,operatorName):
                 embed = discord.Embed(title=operatorData.name+"最近表現",colour=discord.Colour.teal())
                 embed.set_author(name=player.name, icon_url=player.profile_pic_url)
                 embed.set_thumbnail(url=operatorData.icon_url)
-                embed.add_field(name="**勝負**", value=f"{operatorData.rounds_won}/{operatorData.rounds_lost}({operatorData.win_loss_ratio})")
-                embed.add_field(name="**戰損**", value=f"{operatorData.kills}/{operatorData.death}({operatorData.kill_death_ratio})")
+                embed.add_field(name="**勝負**", value=f"{operatorData.rounds_won}/{operatorData.rounds_lost}({round(operatorData.win_loss_ratio/100.2)})")
+                embed.add_field(name="**戰損**", value=f"{operatorData.kills}/{operatorData.death}({round(operatorData.kill_death_ratio/100,2)})")
                 
                 await ctx.send(embed=embed)
         else:
@@ -103,7 +103,7 @@ async def vsoperator(ctx,user1,user2,operatorName):
 async def player(ctx,user):
     try:
         player = await auth.get_player(name=user)
-
+        await player.load_playtime()
         summary = await getPlayerSummary(player)
 
         summaryKd = round(summary.kills/summary.death,2)
@@ -114,8 +114,8 @@ async def player(ctx,user):
         
         embed = discord.Embed(colour=discord.Colour.blue(),description=f"遊玩時數：{time}")
         embed.set_author(name=f"<{player.level}>{player.name}", icon_url=player.profile_pic_url)
-        embed.add_field(name="**概覽**",value=f"勝負:{summary.rounds_won}/{summary.rounds_lost}({summaryKd})\r\n"
-            f"戰損:{summary.kills}/{summary.death}({summaryWinRatio})")
+        embed.add_field(name="**概覽**",value=f"勝負:{summary.matches_won}/{summary.matches_lost}({summaryWinRatio})\r\n"
+            f"戰損:{summary.kills}/{summary.death}({summaryKd})")
         embed.add_field(name=f"**排位 {player.ranked_profile.season_code} {player.ranked_profile.rank} {player.ranked_profile.rank_points}**",
             value=f"勝負:{player.ranked_profile.wins}/{player.ranked_profile.losses}({rankWinRatio})\r\n"
                 f"戰損:{player.ranked_profile.kills}/{player.ranked_profile.deaths}({rankKd})")
@@ -129,18 +129,18 @@ async def player(ctx,user):
 ##結算歷史戰績
 @bot.command()
 async def count(ctx,user):
+    con = sqlite3.connect("r6.db")
+    cur = con.cursor()
     try:
         """
         先query資料庫這個使用者的最新資料->撈r6使用者資料->兩個互減->(勝負等於零)?不寫入資料庫:insert回資料庫->判斷個人資料超過10筆刪除舊資料
         """
         player = await auth.get_player(name=user)
         summary = await getPlayerSummary(player)
-        
-        con = sqlite3.connect("r6.db")
-        cur = con.cursor()
 
-        originData = cur.execute("SELECT WINS,LOSSES,KILLS,DEATHS FROM USER_INFO WHERE USER_ID=? AND TIME = (SELECT MAX(TIME) FROM USER_INFO WHERE USER_ID=? GROUP BY TIME)",(player.id,player.id,)).fetchone()
+        originData = cur.execute("SELECT WINS,LOSSES,KILLS,DEATHS FROM USER_INFO WHERE USER_ID=? AND TIME = (SELECT TIME FROM USER_INFO WHERE USER_ID=? ORDER BY TIME DESC LIMIT 1)",(player.id,player.id,)).fetchone()
 
+        print(originData)
         if(originData is None):
             winsDiff = summary.matches_won
             lossesDiff = summary.matches_lost
@@ -153,14 +153,14 @@ async def count(ctx,user):
             deathsDiff = summary.death - originData[3]
 
         if(winsDiff != 0 or lossesDiff != 0):
-            cur.execute("INSERT INTO USER_INFO VALUES(?,?,?,?,?,?,?,?,?,?,DATE())"
+            cur.execute("INSERT INTO USER_INFO VALUES(?,?,?,?,?,?,?,?,?,?,DATETIME())"
                 ,(player.id,player.name,summary.matches_won,summary.matches_lost,summary.kills,summary.death,winsDiff,lossesDiff,killsDiff,deathsDiff))
             con.commit()
         
         contentData = cur.execute("SELECT TIME,WINS_DIFF,LOSSES_DIFF,KILLS_DIFF,DEATHS_DIFF FROM USER_INFO WHERE USER_ID=? ORDER BY TIME DESC",(player.id,)).fetchall()
         content = ""
         for row in contentData:
-            content += f"**[{row[0]}]**\r\n勝負:{row[1]}/{row[2]}({round(row[1]/row[2],2)}) | 戰損:{row[3]}/{row[4]}({round(row[3]/row[4],2)})"
+            content += f"**[{row[0]}]**\r\n勝負:{row[1]}/{row[2]}({round(row[1]/row[2],2)}) | 戰損:{row[3]}/{row[4]}({round(row[3]/row[4],2)})\r\n"
 
         if(len(contentData)>10):
             cur.execute("DELETE FROM USER_INFO WHERE USER_ID=? AND TIME = (SELECT MIN(TIME) FROM USER_INFO WHERE USER_ID=? GROUP BY TIME)",(player.id,player.id,))
@@ -194,7 +194,6 @@ async def getPlayerSummary(player):
     
     await player.load_summaries(gamemodes=["all"],team_roles=["all"],seasons=seasonCodeList)
     await player.load_ranked_v2()
-    await player.load_playtime()
 
     # 所有賽季資料加總
     summary = None # 個人概要
