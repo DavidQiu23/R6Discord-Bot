@@ -2,6 +2,10 @@
 
 一個查詢《Rainbow Six Siege》玩家戰績的 Discord 機器人，使用 [discord.py](https://github.com/Rapptz/discord.py) 與 [siegeapi](https://github.com/CNDRD/siegeapi) 開發。
 
+> [!WARNING]
+> **本專案已停止運作。** Ubisoft 已封鎖 siegeapi 所使用的登入 API，機器人無法登入取得戰績資料，所有查詢指令皆無法使用。
+> 本 README 僅保留作為專案紀錄與功能展示。
+
 - 指令前綴：`d.`
 - 可查詢玩家總覽、排位 / 一般場戰績、幹員數據、兩位玩家的幹員比較
 - 可記錄玩家每次查詢之間的戰績變化，並繪製 K/D 與勝率趨勢圖
@@ -19,8 +23,6 @@
 | `d.count [user]` | 結算與上次查詢之間的戰績變化（一般 / 排位分開），並產生趨勢圖 |
 
 ## 功能展示
-
-> 以下截圖為舊版畫面，實際顯示欄位以目前版本為準。
 
 ### 指令說明 `d.help`
 
@@ -45,7 +47,7 @@ d.player rush.your.b
 顯示玩家指定幹員的勝負、戰損與比率，幹員名稱不分大小寫。
 
 ```
-d.operator rush.your.b hibana
+d.operator Anime_dadaQ thorn
 ```
 
 ![operator](image/operator.png)
@@ -55,7 +57,7 @@ d.operator rush.your.b hibana
 比較兩位玩家使用同一幹員的勝負與戰損。
 
 ```
-d.vsoperator KuasDavidX ji_for iq
+d.vsoperator Anime_dadaQ rush.your.b hibana
 ```
 
 ![vsoperator](image/vsopeartor.png)
